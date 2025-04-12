@@ -1,0 +1,12 @@
+{
+    "stylelint.validate": ["css", "scss"],
+    "stylelint.lintDirtyFilesOnly": true,
+    "stylelint.ignoreFiles": ["**/*.ts", "**/*.tsx", "**/*.js"],
+    "files.associations": {
+      "*.config.ts": "typescript"
+    },
+    "tailwindCSS.experimental.classRegex": [
+      "cn\\(([^)]*)\\)",
+      "clsx\\(([^)]*)\\)"
+    ]
+  }

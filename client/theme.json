@@ -1,0 +1,36 @@
+{
+  "variant": "vibrant",
+  "primary": "hsl(195, 100%, 50%)",
+  "appearance": "auto",
+  "radius": 0.5,
+  "colors": {
+    "background": {
+      "light": "#d1d5db",  
+      "dark": "#1e1e1e"
+    },
+    "surface": {
+      "light": "#d1d5db",
+      "dark": "#2a2a2a"
+    },
+    "text": {
+      "light": "#111827",
+      "dark": "#f4f4f5"
+    },
+    "muted": {
+      "light": "#d1d5db",  
+      "dark": "#4b5563"
+    },
+    "border": {
+      "light": "#cbd5e1",  
+      "dark": "#374151"
+    },
+    "card": {
+      "light": "#cbd5e1",
+      "dark": "#2c2c2c"
+    },
+    "card-foreground": {
+      "light": "#d1d5db",
+      "dark": "#f3f4f6"
+    }
+  }
+}
