@@ -26,16 +26,16 @@ const Home: React.FC = () => {
             <div className="mb-8 flex justify-center">
               <Logo size="large" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold logo-outline mb-6">
               Protect and <span className="text-primary neon-text">Guide</span> Your Children Online
             </h1>
-            <p className="text-xl md:text-3xl font-bold text-muted-foreground dark:text-white max-w-3xl mx-auto mb-10">
+            <p className="text-xl md:text-4xl text-muted-foreground logo-outline dark:text-white max-w-5xl mx-auto mb-10">
               A Christian parental control app that monitors online activity while teaching
               scripture &amp; about Their Lord &amp; Savior Jesus Christ — The Way, the Truth, and the Life.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/signup">
-                <Button size="lg" className="text-lg px-8">Sign Up</Button>
+                <Button size="lg" className="text-lg logo-outline px-8">Sign Up</Button>
               </Link>
               <Link href="/login">
                 <Button size="lg" variant="outline" className="text-lg px-8">Sign In</Button>
@@ -47,7 +47,7 @@ const Home: React.FC = () => {
         {/* Features Section */}
         <section id="features" className="py-16 bg-muted/ px-4">
           <div className="container mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-center logo-outline mb-12">
               <span className="text-primary neon-text">Features</span> for Christian Parents
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
         {/* Testimonials */}
         <section id="testimonials" className="py-16 bg-muted/ px-4">
           <div className="container mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-center logo-outline mb-12">
               What <span className="text-primary neon-text">Parents</span> Are Saying
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -143,7 +143,7 @@ const Home: React.FC = () => {
         {/* How It Works */}
         <section className="py-16 px-4">
           <div className="container mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-center logo-outline mb-12">
               How It <span className="text-primary neon-text">Works</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -192,15 +192,15 @@ const Home: React.FC = () => {
         {/* Call to Action */}
         <section className="py-16 px-4">
           <div className="container mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold logo-outline mb-6">
               Ready to Create a <span className="text-primary neon-text">Safe Digital Environment</span> for Your Children?
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
+            <p className="text-3xl text-muted-foreground max-w-4xl mx-auto mb-10 dark:text-white logo-outline">
               Join thousands of Christian families using Kingdom Kids to nurture faith while providing
               protection in the digital world.
             </p>
             <Link href="/signup">
-              <Button size="lg" className="text-lg px-8">Get Started Now</Button>
+              <Button size="lg" className="text-lg px-8 logo-outline">Get Started Now</Button>
             </Link>
           </div>
         </section>
