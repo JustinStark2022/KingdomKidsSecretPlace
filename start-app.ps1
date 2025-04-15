@@ -5,46 +5,43 @@ $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $ProjectRoot
 
 # ---- SETUP BACKEND ----
-Write-Host "Setting up Flask backend..."
-$BackendPath = Join-Path $ProjectRoot "flask_backend"
+Write-Host "`nSetting up Node.js Express backend..."
+$BackendPath = Join-Path $ProjectRoot "node_backend"
 Set-Location $BackendPath
 
-# Create venv if not exists
-if (!(Test-Path -Path "venv")) {
-    python -m venv venv
-    Write-Host "Virtual environment created."
+if (Test-Path "package.json") {
+    npm install
+    Write-Host "Backend dependencies installed."
+} else {
+    Write-Host "package.json not found in node_backend. Skipping backend setup."
 }
 
-# Activate venv and install dependencies
-& .\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Write-Host "Backend dependencies installed."
-
-# Go back to root
-Set-Location $ProjectRoot
-
 # ---- SETUP FRONTEND ----
-Write-Host "Setting up Vite React frontend..."
+Write-Host "`nSetting up Vite React frontend..."
 $FrontendPath = Join-Path $ProjectRoot "client"
 Set-Location $FrontendPath
 
-# OPTIONAL: Auto-remove broken @shadcn/ui-tailwind and fix @shadcn/ui version
-(Get-Content package.json) `
-    -replace '"@shadcn/ui-tailwind":\s*"\^0.0.1",?', "" `
-    -replace '"@shadcn/ui":\s*"\^0.0.1"', '"@shadcn/ui": "latest"' `
-    | Set-Content package.json
+# OPTIONAL: Patch broken ShadCN dependencies
+if (Test-Path "package.json") {
+    (Get-Content package.json) `
+        -replace '"@shadcn/ui-tailwind":\s*"\^0.0.1",?', "" `
+        -replace '"@shadcn/ui":\s*"\^0.0.1"', '"@shadcn/ui": "latest"' `
+        | Set-Content package.json
 
-npm install
-Write-Host "Frontend dependencies installed."
+    npm install
+    Write-Host "Frontend dependencies installed."
+} else {
+    Write-Host "package.json not found in client. Skipping frontend setup."
+}
 
 Set-Location $ProjectRoot
 
-Write-Host "`nAll dependencies installed!"
+Write-Host "`n All dependencies installed!"
 
-Write-Host "`nTo start backend:"
-Write-Host "   cd flask_backend; .\venv\Scripts\Activate.ps1; python app.py"
+Write-Host "`n To start backend:"
+Write-Host "   cd node_backend; npm run dev"
 
-Write-Host "`nTo start frontend:"
+Write-Host "`n To start frontend:"
 Write-Host "   cd client; npm run dev"
 
-Write-Host "`nYou're ready to develop!"
+Write-Host "`nYou're ready to develop Kingdom Kids Secret Place!"

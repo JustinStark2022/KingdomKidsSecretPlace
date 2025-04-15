@@ -18,7 +18,7 @@ const Logo: React.FC<LogoProps> = ({ size = "medium" }) => {
       <img
         src="/images/logo11bgg.png"
         alt="Kingdom Kids Secret Place"
-        className={`${sizeClasses[size]} w-auto`}
+        className={`${sizeClasses[size]} logo-outline w-auto`}
       />
     </div>
   );

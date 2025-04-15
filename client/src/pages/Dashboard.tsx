@@ -20,11 +20,12 @@ const Dashboard: React.FC = () => {
     return (
       <div className="min-h-screen relative overflow-hidden">
         <div
-          className="absolute  z-0 bg-cover bg-center opacity-20 dark:opacity-10"
+          className="absolute inset-0 z-0 bg-cover bg-center opacity-30 dark:opacity-30"
           style={{
-            margin: '-30%',
             backgroundImage: "url('/images/dashpbg2.png')",
-            backgroundSize: '68%'
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
           }}
         />
         <div className="relative z-10 p-6 space-y-6">
@@ -38,7 +39,6 @@ const Dashboard: React.FC = () => {
   if (isError) {
     return (
       <div className="min-h-screen relative overflow-hidden">
-        
         <div className="relative z-10 p-6">
           <Alert variant="destructive" className="my-4">
             <AlertCircle className="h-5 w-5" />
@@ -58,15 +58,18 @@ const Dashboard: React.FC = () => {
   if (!currentUser) {
     return (
       <div className="min-h-screen relative overflow-hidden">
-        
-        <div className="relative z-10 space-y-6 p-6 border rounded-lg max-w-md mx-auto mt-8 bg-card">
+        <div className="relative z-10 space-y-6 p-6  rounded-lg max-w-md mx-auto mt-8 bg-card">
           <h2 className="text-2xl font-bold mb-2">
             <span className="text-primary">Welcome</span> to Kingdom Kids!
           </h2>
           <p className="text-muted-foreground mb-4">Sign in to continue.</p>
           <div className="flex gap-4">
-            <Button onClick={() => navigate("/login")} className="w-full">Sign In</Button>
-            <Button variant="outline" onClick={() => navigate("/signup")} className="w-full">Create Account</Button>
+            <Button onClick={() => navigate("/login")} className="w-full">
+              Sign In
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/signup")} className="w-full">
+              Create Account
+            </Button>
           </div>
         </div>
       </div>
@@ -74,14 +77,14 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden">
+    <div className="min-h-screen w-full relative overflow-hidden">
       <div
-        className="absolute inset-0 z-0 bg-cover bg-center opacity-60 dark:opacity-35"
+        className="absolute inset-0 z-0 bg-cover bg-center opacity-50 dark:opacity-85"
         style={{
-          
-          margin: '-30%',
           backgroundImage: "url('/images/dashpbg2.png')",
-          backgroundSize: '68%'
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
         }}
       />
       <div className="relative z-10">

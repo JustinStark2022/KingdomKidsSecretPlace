@@ -1,12 +1,22 @@
 {
-    "stylelint.validate": ["css", "scss"],
-    "stylelint.lintDirtyFilesOnly": true,
-    "stylelint.ignoreFiles": ["**/*.ts", "**/*.tsx", "**/*.js"],
-    "files.associations": {
-      "*.config.ts": "typescript"
-    },
-    "tailwindCSS.experimental.classRegex": [
-      "cn\\(([^)]*)\\)",
-      "clsx\\(([^)]*)\\)"
-    ]
-  }
+  "stylelint.validate": ["css", "scss"],
+  "stylelint.lintDirtyFilesOnly": true,
+
+  "files.associations": {
+    "*.config.ts": "typescript",
+    "*.config.js": "javascript"
+  },
+
+  "tailwindCSS.experimental.classRegex": [
+    "clsx\\(([^)]*)\\)",
+    "cn\\(([^)]*)\\)",
+    "cva\\(([^)]*)\\)"
+  ],
+
+  "tailwindCSS.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+
+  "prettier.ignorePath": ".prettierignore"
+}

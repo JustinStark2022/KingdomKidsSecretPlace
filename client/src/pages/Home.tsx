@@ -7,22 +7,21 @@ import Logo from "@/components/ui/logo";
 
 const Home: React.FC = () => {
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="relative min-h-screen overflow-x-hidden overflow-y-auto">
       {/* Background Image */}
       <div
-        className="absolute inset-0 z-0 bg-contain bg-center opacity-15 dark:opacity-30
-        "
+        className="absolute  inset-0 z-0 bg-cover bg-center opacity-30 dark:opacity-60"
         style={{
-          marginTop: '-10%',
           backgroundImage: "url('/images/homerunbg1.png')",
-          backgroundSize: '148%',
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
         }}
       />
 
       {/* Content Wrapper */}
-      <div className="relative z-10 ">
+      <div className="relative z-10">
         {/* Hero Section */}
-        <section className="md:py-24">
+        <section className="md:py-4 px-0">
           <div className="container mx-auto text-center">
             <div className="mb-8 flex justify-center">
               <Logo size="large" />
@@ -30,27 +29,23 @@ const Home: React.FC = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Protect and <span className="text-primary neon-text">Guide</span> Your Children Online
             </h1>
-            <p className="text-xl md:text-3xl font-bold text-muted-foreground max-w-3xl mx-auto mb-10">
-              A Christian parental control app that monitors online activity while teaching 
-              scripture &amp; about Thier Lord &amp; Savior Jesus Christ The way, the truth, and the life.
+            <p className="text-xl md:text-3xl font-bold text-muted-foreground dark:text-white max-w-3xl mx-auto mb-10">
+              A Christian parental control app that monitors online activity while teaching
+              scripture &amp; about Their Lord &amp; Savior Jesus Christ — The Way, the Truth, and the Life.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/signup">
-                <Button size="lg" className="text-lg px-8">
-                  Sign Up
-                </Button>
+                <Button size="lg" className="text-lg px-8">Sign Up</Button>
               </Link>
               <Link href="/login">
-                <Button size="lg" variant="outline" className="text-lg px-8">
-                  Sign In
-                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8">Sign In</Button>
               </Link>
             </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-16 bg-muted/20 px-4">
+        <section id="features" className="py-16 bg-muted/ px-4">
           <div className="container mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
               <span className="text-primary neon-text">Features</span> for Christian Parents
@@ -104,9 +99,8 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        
         {/* Testimonials */}
-        <section id="testimonials" className="py-16 bg-muted/20 px-4">
+        <section id="testimonials" className="py-16 bg-muted/ px-4">
           <div className="container mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
               What <span className="text-primary neon-text">Parents</span> Are Saying
@@ -145,46 +139,56 @@ const Home: React.FC = () => {
             </div>
           </div>
         </section>
-         {/* How It Works */}
-         <section className="py-16 px-4">
+
+        {/* How It Works */}
+        <section className="py-16 px-4">
           <div className="container mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
               How It <span className="text-primary neon-text">Works</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center">
-              <div className="mb-4 w-16 h-16 rounded-full flex items-center justify-center shadow-lg bg-primary/80 dark:bg-primary/60 border-4 border-white dark:border-black">
-                <span className="text-2xl font-bold text-white drop-shadow-md">1</span>
-              </div>
+              {/* Step 1 */}
+              <Card>
+                <CardContent className="flex flex-col items-center text-center p-6">
+                  <div className="mb-4 w-16 h-16 rounded-full flex items-center justify-center shadow-lg bg-primary/80 dark:bg-primary/60 border-4 border-white dark:border-black">
+                    <span className="text-2xl font-bold text-white drop-shadow-md">1</span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Create an Account</h3>
+                  <p className="text-muted-foreground">
+                    Sign up as a parent and add your children to your family account
+                  </p>
+                </CardContent>
+              </Card>
 
-                <h3 className="text-xl font-bold mb-2">Create an Account</h3>
-                <p className="text-muted-foreground">
-                  Sign up as a parent and add your children to your family account
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-              <div className="mb-4 w-16 h-16 rounded-full flex items-center justify-center shadow-lg bg-primary/80 dark:bg-primary/60 border-4 border-white dark:border-black">
-                <span className="text-2xl font-bold text-white drop-shadow-md">2</span>
-              </div>
+              {/* Step 2 */}
+              <Card>
+                <CardContent className="flex flex-col items-center text-center p-6">
+                  <div className="mb-4 w-16 h-16 rounded-full flex items-center justify-center shadow-lg bg-primary/80 dark:bg-primary/60 border-4 border-white dark:border-black">
+                    <span className="text-2xl font-bold text-white drop-shadow-md">2</span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Set Controls</h3>
+                  <p className="text-muted-foreground">
+                    Customize parental controls, screen time limits, and content filtering
+                  </p>
+                </CardContent>
+              </Card>
 
-                <h3 className="text-xl font-bold mb-2">Set Controls</h3>
-                <p className="text-muted-foreground">
-                  Customize parental controls, screen time limits, and content filtering
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-              <div className="mb-4 w-16 h-16 rounded-full flex items-center justify-center shadow-lg bg-primary/80 dark:bg-primary/60 border-4 border-white dark:border-black">
-                <span className="text-2xl font-bold text-white drop-shadow-md">3</span>
-              </div>
-
-                <h3 className="text-xl font-bold mb-2">Start Learning</h3>
-                <p className="text-muted-foreground">
-                  Your children can start earning rewards while learning Biblical values
-                </p>
-              </div>
+              {/* Step 3 */}
+              <Card>
+                <CardContent className="flex flex-col items-center text-center p-6">
+                  <div className="mb-4 w-16 h-16 rounded-full flex items-center justify-center shadow-lg bg-primary/80 dark:bg-primary/60 border-4 border-white dark:border-black">
+                    <span className="text-2xl font-bold text-white drop-shadow-md">3</span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Start Learning</h3>
+                  <p className="text-muted-foreground">
+                    Your children can start earning rewards while learning Biblical values
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
+
         {/* Call to Action */}
         <section className="py-16 px-4">
           <div className="container mx-auto text-center">
@@ -196,18 +200,16 @@ const Home: React.FC = () => {
               protection in the digital world.
             </p>
             <Link href="/signup">
-              <Button size="lg" className="text-lg px-8">
-                Get Started Now
-              </Button>
+              <Button size="lg" className="text-lg px-8">Get Started Now</Button>
             </Link>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="pt-12 pb-5 bg-card border-t px-4">
+        <footer className="pt-12 pb-5 bg-card border-t ">
           <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="mb-6 md:mb-0">
+            <div className="flex flex-col pl-5 md:flex-row justify-between items-center">
+              <div className="mb-2 md:mb-0">
                 <Logo />
                 <p className="text-muted-foreground mt-2">
                   Teaching children about Jesus Christ, <br />
@@ -241,12 +243,11 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="mt-4 pt-2 text-center">
-              <p className=" mb-0 mt-2 pt-0 pb-1 max-h-0 border-t-2 text-muted-foreground">
+              <p className="mb-0 mt-2 pt-0 pb-1 max-h-0 border-t-2 text-muted-foreground">
                 &copy; {new Date().getFullYear()} Kingdom Kids Secret Place. All rights reserved.
               </p>
             </div>
           </div>
-
         </footer>
       </div>
     </div>

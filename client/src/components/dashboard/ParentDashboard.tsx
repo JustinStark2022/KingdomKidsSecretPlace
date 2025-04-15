@@ -30,8 +30,8 @@ const ParentDashboard: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs className="mb-6 pl-4 " defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6 ">
+      <Tabs className="mb-6 pl-0 ml-6 mr-6 " defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-6 pl-4">
           <TabsTrigger value="dashboard">
             <Activity className="mr-2 h-4 w-4" />
             Pending Alerts
@@ -56,7 +56,7 @@ const ParentDashboard: React.FC = () => {
 
         {/* Dashboard Tab Content */}
         <TabsContent value="dashboard">
-          <div className=" pl-4 pr-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className=" ml-2 pl-4 pr-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Game Analysis Card */}
             <Card
               className="cursor-pointer hover:shadow-lg hover:border-primary transition-all"

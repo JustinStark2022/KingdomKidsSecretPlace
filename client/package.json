@@ -1,5 +1,5 @@
 {
-  "name": "rest-flask",
+  "name": "kingdomkids-client",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
@@ -9,8 +9,7 @@
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push",
-    "preview": "vite preview",
-    "build:flask": "vite build --outDir ../flask-backend/static"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

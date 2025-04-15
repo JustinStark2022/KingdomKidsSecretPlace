@@ -45,9 +45,9 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       )}
     >
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="absolute inset-y-0 left-0 w-64 bg-sidebar shadow-lg">
-        <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
-          <Logo size="small" />
+      <div className="absolute inset-y-0 left-0 w-64  bg-card shadow-lg">
+        <div className=" border-b border-sidebar-border flex items-center justify-between">
+          <Logo size="large" />
           <Button
             variant="ghost"
             size="icon"
@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   );
 
   const desktopSidebar = (
-    <aside className="hidden md:block fixed top-15  left-0 h-screen w-[198px] bg-sidebar z-40">
+    <aside className="hidden md:block fixed top-15  left-0 h-screen w-[158px] bg-card z-40">
       <nav className="p-1 ">
         <ul className="space-y-2">
           {links.map((link, index) => (

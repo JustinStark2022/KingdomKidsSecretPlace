@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="flex flex-1">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         
-        <main className="flex-1 p-4 pl-0 md:ml-[196px]">
+        <main className="flex-1 p-0 pl-0 md:ml-[156px]">
           {children}
         </main>
       </div>

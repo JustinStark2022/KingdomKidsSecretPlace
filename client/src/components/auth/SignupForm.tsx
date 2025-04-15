@@ -13,11 +13,11 @@ import { useLocation } from "wouter";
 import Logo from "../ui/logo";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// Extended schema for confirming password
+// Validation schema with password confirmation
 const signupSchema = z.object({
-  username: z.string().min(3),
-  email: z.string().email(),
-  password: z.string().min(6),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
   displayName: z.string().optional(),
   isParent: z.boolean()
@@ -44,8 +44,8 @@ const SignupForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      isParent: true,
-      displayName: ""
+      displayName: "",
+      isParent: true
     }
   });
 
@@ -53,25 +53,28 @@ const SignupForm = () => {
     try {
       setLoading(true);
       const { confirmPassword, isParent, ...rest } = data;
-  
+
       const userData = {
         ...rest,
         role: isParent ? "parent" : "child"
       };
-  
+
       const response = await apiRequest("POST", "/api/auth/signup", userData);
-  
+
       if (response.ok) {
+        const result = await response.json();
         toast({
           title: "Account created",
-          description: "Welcome to Kingdom Kids Secret Place",
+          description: `Welcome, ${result.user.displayName || result.user.username}!`,
         });
         setLocation("/login");
+      } else {
+        throw new Error("Signup failed");
       }
-    } catch (err) {
+    } catch (err: any) {
       toast({
         title: "Signup failed",
-        description: err instanceof Error ? err.message : "Something went wrong",
+        description: err.message || "Something went wrong",
         variant: "destructive"
       });
     } finally {
@@ -85,7 +88,7 @@ const SignupForm = () => {
         <div className="flex flex-col items-center mb-6">
           <Logo size="large" />
           <p className="text-center text-muted-foreground mt-6 mb-2 font-serif italic">
-            "Jesus said, 'Let the little children come to me'" - Matthew 19:14
+            "Jesus said, 'Let the little children come to me'" – Matthew 19:14
           </p>
         </div>
 
