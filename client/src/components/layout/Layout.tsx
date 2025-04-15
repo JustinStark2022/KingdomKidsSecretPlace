@@ -16,7 +16,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const toggleNotifications = () => setNotificationsOpen(!notificationsOpen);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    
+    <div className="min-h-screen  flex flex-col">
       <Header 
         onMenuClick={toggleSidebar} 
         onNotificationsClick={toggleNotifications} 
@@ -24,8 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       <div className="flex flex-1">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        
-        <main className="flex-1 p-0 pl-0 md:ml-[156px]">
+        <main className="flex-1 p-0 pl-0 md:ml-[156px] ">
           {children}
         </main>
       </div>

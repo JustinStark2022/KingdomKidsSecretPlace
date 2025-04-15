@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationsClick }) =>
               aria-label="Menu"
               onClick={onMenuClick}
             >
-              <Menu className="h-5 w-5 text-primary" />
+              <Menu className="h-5 w-5 text-primary " />
             </Button>
           )}
           
@@ -55,9 +55,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationsClick }) =>
         <div className="flex items-center space-x-4">
           {!isMobile && (
             <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 dark:bg-slate-100 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                className="pl-10 pr-4 py-2 bg-muted"
+                className="pl-10 pr-4 py-2  dark:bg-slate-100  bg-muted"
                 placeholder="Search..."
                 type="search"
               />
@@ -71,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onNotificationsClick }) =>
             onClick={onNotificationsClick}
             className="relative"
           >
-            <Bell className="h-5 w-5" />
+            <Bell className="h-9 w-9" />
             {unreadCount > 0 && (
               <Badge 
                 variant="secondary" 

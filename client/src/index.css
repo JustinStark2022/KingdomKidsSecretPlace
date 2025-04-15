@@ -96,7 +96,7 @@
 
 @layer components {
   .logo-outline {
-    filter: drop-shadow(0 0 1px black) drop-shadow(0 0 1px black);
+    filter: drop-shadow(0 0 1px black) drop-shadow(0 0 1  px black);
   }
 
   .dark .logo-outline {

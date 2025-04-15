@@ -50,9 +50,9 @@ const Home: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-center logo-outline mb-12">
               <span className="text-primary neon-text">Features</span> for Christian Parents
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pl-8">
               <Card>
-                <CardContent className="p-6 text-center">
+                <CardContent className="p-6 text-center ">
                   <div className="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20">
                     <Shield className="h-8 w-8 text-primary" />
                   </div>
@@ -105,7 +105,7 @@ const Home: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-center logo-outline mb-12">
               What <span className="text-primary neon-text">Parents</span> Are Saying
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pl-8">
               <Card>
                 <CardContent className="p-6">
                   <p className="italic mb-4">
@@ -146,7 +146,7 @@ const Home: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-center logo-outline mb-12">
               How It <span className="text-primary neon-text">Works</span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pl-8">
               {/* Step 1 */}
               <Card>
                 <CardContent className="flex flex-col items-center text-center p-6">

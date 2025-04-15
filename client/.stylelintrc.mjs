@@ -2,7 +2,7 @@ export default {
   extends: ["stylelint-config-standard"],
   plugins: [],
   rules: {
-    // Allow Tailwind-specific at-rules
+   
     "at-rule-no-unknown": [true, {
       ignoreAtRules: [
         "tailwind",

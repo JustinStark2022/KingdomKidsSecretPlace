@@ -24,14 +24,14 @@ const ParentDashboard: React.FC = () => {
         <h1 className=" pl-7 pt-7 text-5xl font-bold mb-2">
           <span className="text-primary neon-text">Kingdom Control Hub</span>
         </h1>
-        <p className=" pl-7 text-2xl font-bold text-muted-foreground">
+        <p className=" pl-7 text-2xl  dark:text-white font-bold logo-outline ">
           Customize content filtering &amp; real-time alerts to fit your needs.
         </p>
       </div>
 
       {/* Tabs */}
-      <Tabs className="mb-6 pl-0 ml-6 mr-6 " defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6 pl-4">
+      <Tabs className="mb-6 pl-0 ml-8 mr-2 " defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-6 pl-2">
           <TabsTrigger value="dashboard">
             <Activity className="mr-2 h-4 w-4" />
             Pending Alerts
@@ -144,7 +144,7 @@ const ParentDashboard: React.FC = () => {
 
           {/* Getting Started Section */}
           <div className="mt-8">
-            <h2 className="text-xl pl-4 font-bold mb-4">Kingdom Kids Family Discipleship Hub</h2>
+            <h2 className="text-2xl pl-4 logo-outline font-bold mb-4">Kingdom Kids Family Discipleship Hub</h2>
             <Card>
             <CardContent className="p-6 space-y-4">
               <p>

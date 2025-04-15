@@ -2,7 +2,7 @@
   "variant": "vibrant",
   "primary": "hsl(195, 100%, 50%)",
   "appearance": "auto",
-  "radius": 0,
+  "radius": 0.5,
   "colors": {
     "background": {
       "light": "#d1d5db",  

@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   );
 
   const desktopSidebar = (
-    <aside className="hidden md:block fixed top-15  left-0 h-screen w-[158px] bg-card z-40">
+    <aside className="       md:block fixed top-15  left-0 h-screen w-[172px] bg-card z-40">
       <nav className="p-1 ">
         <ul className="space-y-2">
           {links.map((link, index) => (
