@@ -10,7 +10,7 @@ const Home: React.FC = () => {
     <div className="relative min-h-screen overflow-x-hidden overflow-y-auto">
       {/* Background Image */}
       <div
-        className="absolute  inset-0 z-0 bg-cover bg-center opacity-30 dark:opacity-60"
+        className="absolute  inset-0 z-0 bg-cover bg-center opacity-50 dark:opacity-60"
         style={{
           backgroundImage: "url('/images/homerunbg1.png')",
           backgroundSize: "cover",
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
             <h1 className="text-4xl md:text-6xl font-bold logo-outline mb-6">
               Protect and <span className="text-primary neon-text">Guide</span> Your Children Online
             </h1>
-            <p className="text-xl md:text-4xl text-muted-foreground logo-outline dark:text-white max-w-5xl mx-auto mb-10">
+            <p className="text-xl text-black md:text-4xl text-muted-foreground logo-outline dark:text-white max-w-5xl mx-auto mb-10">
               A Christian parental control app that monitors online activity while teaching
               scripture &amp; about Their Lord &amp; Savior Jesus Christ — The Way, the Truth, and the Life.
             </p>
