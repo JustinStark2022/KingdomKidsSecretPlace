@@ -1,20 +1,22 @@
-import express from 'express';
+// routes/bible.routes.js
+import express from "express";
 import {
-  getAllBibles,
-  getBooks,
-  getChapters,
-  getVerse,
-  getChapter,
-  searchBible,
-} from '../controllers/bible.controller.js';
+  getBibleVersions,
+  getBibleBooks,
+  getBibleChapter,
+  getBibleVerse,
+  getBibleSearch,
+  getBibleChapters,
+} from "../controllers/bible.controller.js";
 
 const router = express.Router();
 
-router.get('/bibles', getAllBibles);
-router.get('/bibles/:bibleId/books', getBooks);
-router.get('/bibles/:bibleId/books/:bookId/chapters', getChapters);
-router.get('/bibles/:bibleId/verses/:verseId', getVerse);
-router.get('/bibles/:bibleId/chapters/:chapterId', getChapter);
-router.get('/bibles/:bibleId/search', searchBible);
+// Updated paths to match frontend expectations
+router.get("/versions", getBibleVersions);
+router.get("/books", getBibleBooks);
+router.get("/chapter", getBibleChapter);
+router.get("/verse", getBibleVerse);
+router.get("/search", getBibleSearch);
+router.get("/:bibleId/books/:bookId/chapters", getBibleChapters);
 
 export default router;
