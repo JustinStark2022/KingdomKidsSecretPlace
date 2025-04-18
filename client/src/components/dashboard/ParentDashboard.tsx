@@ -22,7 +22,7 @@ const ParentDashboard: React.FC = () => {
       {/* Title */}
       <div>
         <h1 className=" pl-7 pt-7 text-5xl font-bold mb-2">
-          <span className="text-primary neon-text">Kingdom Control Hub</span>
+          <span className="text-primary logo-outline neon-text">Kingdom Control Hub</span>
         </h1>
         <p className=" pl-7 text-2xl  dark:text-white font-bold logo-outline ">
           Customize content filtering &amp; real-time alerts to fit your needs.

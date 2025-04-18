@@ -17,13 +17,20 @@ const PrayerJournal: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[url('/images/prayerjournalbg1.png')] bg-cover bg-center">
-      <div className="absolute inset-0 bg-white/70 dark:bg-muted/70  z-0" />
+    <div className="relative min-h-screen  ">
+      {/* Background image layer */}
+      <div
+        className="absolute  -top-40 inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-90 dark:opacity-80"
+        style={{
+          backgroundImage: "url('/images/prayerjournalbg1.png')",
+        }}
+      />
+      <div className="absolute inset-0 bg-white/20 dark:bg-muted/20  z-0" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-10 space-y-8">
         <Card className="bg-white/90 dark:bg-muted/90 rounded-3xl shadow-xl border border-muted">
           <CardContent className="p-8 text-center space-y-6">
-            <h2 className="text-2xl font-extrabold text-primary">My Prayer Journal</h2>
+            <h2 className=" text-2xl font-extrabold text-primary">My Prayer Journal</h2>
             <p className="text-muted-foreground text-md">
               Write your prayers and keep track of your conversations with God.
             </p>

@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 interface User {
   id: number;
@@ -7,6 +7,7 @@ interface User {
   role: string;
   createdAt: string;
   isParent: boolean;
+  age?: number; // Optional for child distinction
 }
 
 interface UserContextType {
@@ -28,3 +29,5 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     </UserContext.Provider>
   );
 };
+
+export const useUser = () => useContext(UserContext);

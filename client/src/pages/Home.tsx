@@ -27,15 +27,15 @@ const Home: React.FC = () => {
               <Logo size="large" />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold logo-outline mb-6">
-              Protect and <span className="text-primary neon-text">Guide</span> Your Children Online
+              <span className="text-primary neon-text">Protect</span> and <span className="text-primary neon-text">Guide</span> Your <span className="text-primary neon-text">Children Online</span>
             </h1>
-            <p className="text-xl text-black md:text-4xl text-muted-foreground logo-outline dark:text-white max-w-5xl mx-auto mb-10">
+            <p className="text-xl text-black font-semibold md:text-4xl logo-outline dark:text-white max-w-5xl mx-auto mb-10">
               A Christian parental control app that monitors online activity while teaching
               scripture &amp; about Their Lord &amp; Savior Jesus Christ — The Way, the Truth, and the Life.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/signup">
-                <Button size="lg" className="text-lg logo-outline px-8">Sign Up</Button>
+                <Button size="lg" className="text-lg border-black  shadow-sidebar-border logo-outline px-8">Sign Up</Button>
               </Link>
               <Link href="/login">
                 <Button size="lg" variant="outline" className="text-lg px-8">Sign In</Button>

@@ -9,7 +9,10 @@ import { BibleLesson } from "@/types/lesson";
 import {
   GraduationCap,
   Award,
-  Star
+  Star,
+  Book,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -39,45 +42,45 @@ const ChildDashboard: React.FC<ChildDashboardProps> = ({ childId }) => {
   });
 
   const isLoading = !data;
-
   const devotional = data?.dailyDevotional;
   const gameTime = data?.gameTime;
   const scriptureProgress = data?.scriptureProgress || [];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">
-          <span className="text-primary neon-text">Welcome,</span>{" "}
-          {isLoading ? (
-            <Skeleton className="h-7 w-32 inline-block" />
-          ) : (
-            data?.user.displayName || "Child"
-          )}!
+    <div className="space-y-6 px-4 py-6 animate-fade-in">
+      {/* 🎉 Welcome Section */}
+      <div className="text-center">
+        <h2 className="text-3xl font-bold mb-1 text-gradient bg-gradient-to-r from-cyan-400 to-blue-500 inline-block bg-clip-text text-transparent">
+          👋 Welcome, {isLoading ? <Skeleton className="h-6 w-32 inline-block" /> : data?.user.displayName || "Friend"}!
         </h2>
-        <p className="text-muted-foreground">Let's learn about Jesus today!</p>
+        <p className="text-muted-foreground text-lg">Let’s grow in God’s Word together today!</p>
       </div>
 
-      {/* 🕊️ Daily Devotional */}
+      {/* 📖 Daily Devotional */}
       <section>
-        <Card className="shadow-md">
-          <CardContent className="p-4">
-            <h3 className="font-bold text-lg mb-2">Today's Devotional</h3>
+        <Card className="shadow-lg border border-blue-300/20 bg-blue-50 dark:bg-muted/70">
+          <CardContent className="p-5">
+            <div className="flex items-center mb-3 gap-2">
+              <Sparkles className="text-yellow-500 animate-pulse" />
+              <h3 className="font-bold text-xl">Today's Devotional</h3>
+            </div>
+
             {isLoading || !devotional ? (
               <div className="space-y-3">
                 <Skeleton className="h-6 w-3/4" />
                 <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-4 w-4/5" />
               </div>
             ) : (
               <>
-                <h4 className="font-semibold text-primary mb-1">{devotional.title}</h4>
-                <p className="text-sm italic mb-2 font-serif">"{devotional.verse}"</p>
+                <h4 className="text-lg font-semibold text-primary">{devotional.title}</h4>
+                <p className="text-sm italic font-serif text-sky-600 dark:text-sky-400 mb-2">
+                  “{devotional.verse}”
+                </p>
                 <p className="text-sm text-muted-foreground">{devotional.content}</p>
-                <div className="mt-3">
+                <div className="mt-4 text-right">
                   <Link href="/devotionals/today">
-                    <Button size="sm">Read More</Button>
+                    <Button size="sm">Open Full Devotional</Button>
                   </Link>
                 </div>
               </>
@@ -86,56 +89,55 @@ const ChildDashboard: React.FC<ChildDashboardProps> = ({ childId }) => {
         </Card>
       </section>
 
-      {/* 🎮 Game Time */}
+      {/* 🕹️ Game Time */}
       <section>
-        <Card className="shadow-md">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-bold text-lg">Your Game Time</h3>
-              <div className="text-sm font-semibold">
-                {isLoading ? (
-                  <Skeleton className="h-5 w-24" />
-                ) : (
-                  <span className="text-primary">{gameTime?.available ?? 0} minutes available</span>
-                )}
-              </div>
+        <Card className="shadow-md border border-green-300/20 bg-green-50 dark:bg-muted/70">
+          <CardContent className="p-5">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-lg font-bold flex items-center gap-1">
+                <Clock className="h-5 w-5 text-primary" />
+                Game Time
+              </h3>
+              {isLoading ? (
+                <Skeleton className="h-5 w-24" />
+              ) : (
+                <span className="text-primary text-sm font-bold">{gameTime?.available ?? 0} mins left</span>
+              )}
             </div>
 
-            <div className="bg-muted/20 rounded-lg p-3 mb-4">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-sm">Game time progress</span>
-                <span className="text-xs text-primary">
-                  {isLoading
-                    ? "..."
-                    : `${gameTime?.earned ?? 0}/${gameTime?.total ?? 0} mins earned`}
+            <div className="bg-muted/20 rounded-xl p-3 mb-3">
+              <div className="flex justify-between text-sm">
+                <span>Progress</span>
+                <span className="text-primary font-medium">
+                  {isLoading ? "..." : `${gameTime?.earned ?? 0}/${gameTime?.total ?? 0} mins`}
                 </span>
               </div>
-              <div className="w-full bg-muted/30 rounded-full h-2">
+              <div className="w-full bg-muted/40 rounded-full h-2 mt-1">
                 <div
-                  className="bg-primary h-2 rounded-full"
+                  className="bg-primary h-2 rounded-full transition-all duration-500"
                   style={{
                     width: isLoading || !gameTime?.total
                       ? "0%"
                       : `${(gameTime.earned / gameTime.total) * 100}%`,
                   }}
-                ></div>
+                />
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Complete Bible lessons and memorize scripture to earn more game time!
+                Earn game time by completing Bible challenges! 🏆
               </p>
             </div>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <Link href="/lessons">
-                <Button variant="outline" size="sm" className="flex items-center">
+                <Button variant="outline" size="sm" className="w-full">
                   <GraduationCap className="mr-1 h-4 w-4" />
-                  Bible Lessons
+                  Lessons
                 </Button>
               </Link>
               <Link href="/bible/memorize">
-                <Button variant="outline" size="sm" className="flex items-center">
+                <Button variant="outline" size="sm" className="w-full">
                   <Star className="mr-1 h-4 w-4" />
-                  Scripture Challenge
+                  Memory Verses
                 </Button>
               </Link>
             </div>
@@ -145,14 +147,14 @@ const ChildDashboard: React.FC<ChildDashboardProps> = ({ childId }) => {
 
       {/* 📖 Scripture Memorization */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-primary neon-text">Your Scripture Progress</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xl font-bold text-sky-500">Your Scripture Memory</h3>
           <Link href="/bible/memorize">
-            <Button variant="link" className="text-primary">View All</Button>
+            <Button variant="link" className="text-primary">See All</Button>
           </Link>
         </div>
 
-        <Card className="shadow-md">
+        <Card className="shadow-md border border-yellow-300/20 bg-yellow-50 dark:bg-muted/70">
           <CardContent className="p-4">
             {isLoading ? (
               <div className="space-y-4">
@@ -171,7 +173,7 @@ const ChildDashboard: React.FC<ChildDashboardProps> = ({ childId }) => {
                 {scriptureProgress.slice(0, 3).map((scripture) => (
                   <div key={scripture.id} className="flex justify-between items-center">
                     <div>
-                      <h4 className="font-semibold">{scripture.scriptureReference}</h4>
+                      <h4 className="font-semibold text-md text-primary">{scripture.scriptureReference}</h4>
                       <p className="text-sm text-muted-foreground line-clamp-1">
                         {scripture.content}
                       </p>
@@ -185,7 +187,7 @@ const ChildDashboard: React.FC<ChildDashboardProps> = ({ childId }) => {
                         {scripture.memorized ? (
                           <>
                             <Award className="mr-1 h-4 w-4" />
-                            Completed
+                            Done!
                           </>
                         ) : (
                           "Practice"
@@ -197,7 +199,7 @@ const ChildDashboard: React.FC<ChildDashboardProps> = ({ childId }) => {
               </div>
             ) : (
               <div className="text-center py-4">
-                <p className="text-muted-foreground">No scripture memorization tasks yet!</p>
+                <p className="text-muted-foreground">No scriptures yet! Start one now ✨</p>
                 <Link href="/bible/memorize/new">
                   <Button className="mt-2">Start Memorizing</Button>
                 </Link>
@@ -206,8 +208,6 @@ const ChildDashboard: React.FC<ChildDashboardProps> = ({ childId }) => {
           </CardContent>
         </Card>
       </section>
-
-      {/* Activities Section stays unchanged (you can copy it back in here) */}
     </div>
   );
 };

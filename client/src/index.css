@@ -96,7 +96,7 @@
 
 @layer components {
   .logo-outline {
-    filter: drop-shadow(0 0 1px black) drop-shadow(0 0 1  px black);
+    filter: drop-shadow(0 0 1px black) drop-shadow(0 0 4 px black);
   }
 
   .dark .logo-outline {
@@ -108,10 +108,10 @@
     letter-spacing: 0.01em;
     color: hsl(var(--primary));
     text-shadow:
-      -1px -1px 0 black,
-      1px -1px 0 black,
-      -1px 1px 0 black,
-      1px 1px 0 black;
+      -3px -3px 0 black,
+      3px -3px 0 black,
+      -3px 3px 0 black,
+      3px 3px 0 black;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

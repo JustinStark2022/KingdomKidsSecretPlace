@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth"; 
 import { X } from "lucide-react";
 import Logo from "@/components/ui/logo";
 import {
@@ -24,7 +25,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [location] = useLocation();
-
+  const { isParent } = useAuth(); // <- get isParent from useAuth
   const links = [
     { href: "/", label: "Home", icon: <Home className="h-5 w-5" /> },
     { href: "/dashboard", label: "Dashboard", icon: <Activity className="h-5 w-5" /> },
@@ -32,7 +33,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     { href: "/prayer", label: "Prayer Journal", icon: <MessageSquare className="h-5 w-5" /> },
     { href: "/devotionals", label: "Devotionals", icon: <Calendar className="h-5 w-5" /> },
     { href: "/lessons", label: "Bible Lessons", icon: <GraduationCap className="h-5 w-5" /> },
-    { href: "/settings", label: "Settings", icon: <Settings className="h-5 w-5" /> },
+   
+    ...(isParent
+      ? [{ href: "/settings", label: "Settings", icon: <Settings className="h-5 w-5" /> }]
+      : []),
     { href: "/about", label: "About Us", icon: <Info className="h-5 w-5" /> },
     { href: "/support", label: "Support", icon: <HelpCircle className="h-5 w-5" /> },
   ];

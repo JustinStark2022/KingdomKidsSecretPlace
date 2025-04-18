@@ -20,18 +20,32 @@ const LoginForm = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { success } = await login({ username, password });
-  
-    if (!success) {
+    const { success, user, error: loginError } = await login({ username, password });
+
+    if (!success || !user) {
+      const message = loginError instanceof Error ? loginError.message : "Please check your username and password.";
       setError("Invalid credentials");
       toast({
         title: "Login failed",
-        description: "Please check your username and password.",
+        description: message,
         variant: "destructive"
       });
-    } else {
-      toast({ title: "Welcome back!" });
-      setLocation("/dashboard"); // ✅ THIS sends the user to the dashboard!
+      return;
+    }
+
+    toast({ title: `Welcome back, ${user.displayName || user.username}!` });
+
+    // ✅ Role-based routing
+    switch (user.role) {
+      case "parent":
+        setLocation("/dashboard");
+        break;
+      case "child":
+        setLocation("/child-dashboard");
+        break;
+      default:
+        setLocation("/");
+        break;
     }
   };
 
@@ -46,7 +60,6 @@ const LoginForm = () => {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          {/* Username */}
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <div className="relative">
@@ -58,12 +71,12 @@ const LoginForm = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Your username"
                 className="pl-10"
+                autoComplete="username"
                 required
               />
             </div>
           </div>
 
-          {/* Password */}
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
@@ -75,6 +88,7 @@ const LoginForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
                 className="pl-10"
+                autoComplete="current-password" // ✅ Added this
                 required
               />
             </div>
@@ -106,3 +120,4 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
