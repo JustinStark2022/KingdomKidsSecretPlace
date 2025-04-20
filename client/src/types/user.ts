@@ -1,7 +1,10 @@
 export interface User {
-  id: number; // updated from string to number for consistency
+  id: number;
   username: string;
-  displayName: string;
   role: "parent" | "child";
-  createdAt: string;
+  displayName?: string;
+  email?: string; // ✅ Add this line
+  isParent?: boolean;
+  parentId?: number | null;
+  createdAt?: string;
 }

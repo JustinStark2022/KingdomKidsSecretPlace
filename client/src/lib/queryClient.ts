@@ -1,14 +1,27 @@
+// ✅ Imports
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-// ✅ Throw errors for non-OK responses
+// ✅ Read from .env file
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// ✅ Throw detailed error if response not OK
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    const contentType = res.headers.get("content-type");
+    const errorBody = contentType?.includes("application/json")
+      ? await res.json().catch(() => null)
+      : await res.text().catch(() => null);
+
+    const message =
+      typeof errorBody === "string"
+        ? errorBody
+        : errorBody?.message || res.statusText;
+
+    throw new Error(`${res.status}: ${message}`);
   }
 }
 
-// ✅ Helper to attach Authorization + Content-Type
+// ✅ Attach Authorization + Content-Type dynamically
 function getAuthHeaders(data?: unknown) {
   const token = localStorage.getItem("token");
 
@@ -18,30 +31,31 @@ function getAuthHeaders(data?: unknown) {
   };
 }
 
-// ✅ For POST, PUT, DELETE requests
-export async function apiRequest(
+// ✅ Generic API request wrapper
+export async function apiRequest<T = any>(
   method: string,
   url: string,
   data?: unknown
-): Promise<Response> {
-  const res = await fetch(url, {
+): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${url}`, {
     method,
     headers: getAuthHeaders(data),
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    credentials: "include", // Needed only if using cookies (safe to leave)
   });
 
   await throwIfResNotOk(res);
-  return res;
+  return await res.json();
 }
 
-// ✅ For useQuery hook with token support
+// ✅ React Query integration — GETs with optional 401 handling
 type UnauthorizedBehavior = "returnNull" | "throw";
 
 export const getQueryFn =
   <T>({ on401 }: { on401: UnauthorizedBehavior }): QueryFunction<T> =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    const res = await fetch(`${API_BASE_URL}${queryKey[0] as string}`, {
+      method: "GET",
       headers: getAuthHeaders(),
       credentials: "include",
     });
@@ -54,15 +68,15 @@ export const getQueryFn =
     return await res.json();
   };
 
-// ✅ Shared Query Client
+// ✅ Initialize Query Client
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
       retry: false,
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
     },
     mutations: {
       retry: false,

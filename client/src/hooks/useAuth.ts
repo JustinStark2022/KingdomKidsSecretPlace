@@ -1,8 +1,10 @@
-// client/src/hooks/useAuth.ts
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { apiRequest } from "@/lib/queryClient";
+
+// ✅ Set base URL for backend API
+axios.defaults.baseURL = "http://localhost:5000";
 
 interface Credentials {
   username: string;
@@ -20,7 +22,7 @@ export const useAuth = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch user on mount using stored token
+  // ✅ Fetch user if token exists on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -33,46 +35,53 @@ export const useAuth = () => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
+        console.log("✅ User loaded from token:", res.data);
         setCurrentUser(res.data);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn("⚠️ Invalid or expired token:", err);
         setCurrentUser(null);
-        localStorage.removeItem("token"); // remove stale token
+        localStorage.removeItem("token");
       })
       .finally(() => {
         setLoading(false);
       });
   }, []);
 
-  // ✅ Login and store JWT
+  // ✅ Login and store JWT token
   const login = async (credentials: Credentials): Promise<LoginResponse> => {
     try {
       const res = await axios.post("/api/auth/login", credentials);
       const { user, token } = res.data;
 
+      console.log("✅ Login response:", res.data);
+
       if (token) {
         localStorage.setItem("token", token);
+        console.log("✅ Token stored in localStorage");
+      } else {
+        console.warn("❌ Login response missing token");
       }
 
       setCurrentUser(user);
       return { success: true, user, token };
     } catch (err) {
+      console.error("❌ Login error:", err);
       return { success: false, error: err };
     }
   };
 
-  // ✅ Sign up user (if registration enabled)
+  // ✅ Signup logic using apiRequest
   const signup = async (credentials: Credentials) => {
     try {
       const res = await apiRequest("POST", "/api/auth/signup", credentials);
-      const data = await res.json();
-      return { success: true, user: data.user };
+      return { success: true, user: res.user };
     } catch (err) {
       return { success: false, error: err };
     }
   };
 
-  // ✅ Manually fetch authenticated user
+  // ✅ Revalidate user manually
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -90,17 +99,18 @@ export const useAuth = () => {
         localStorage.removeItem("token");
       }
     } catch (err) {
-      console.error("Failed to fetch user:", err);
+      console.error("❌ fetchUser error:", err);
       setCurrentUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Optional logout function
+  // ✅ Clear all session data
   const logout = () => {
     localStorage.removeItem("token");
     setCurrentUser(null);
+    console.log("👋 Logged out");
   };
 
   return {

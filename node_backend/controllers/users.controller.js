@@ -1,4 +1,3 @@
-// controllers/users.controller.js
 import { db } from '../db/index.js';
 import { users } from '../shared/schema.js';
 import { eq } from 'drizzle-orm';
@@ -10,7 +9,6 @@ export const getCurrentUser = async (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  // Return actual DB user from token ID
   const dbUser = await db
     .select()
     .from(users)
@@ -65,6 +63,7 @@ export const getUserById = async (req, res) => {
 export const getChildrenForParent = async (req, res) => {
   try {
     const parentId = req.user?.id;
+
     if (!parentId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -72,9 +71,9 @@ export const getChildrenForParent = async (req, res) => {
     const childUsers = await db
       .select()
       .from(users)
-      .where(eq(users.parentId, parentId));
+      .where(eq(users['parent_id'], parentId)); // ✅ fix: bracket notation
 
-    res.json({ children: childUsers });
+    res.status(200).json({ children: childUsers });
   } catch (error) {
     console.error("Error fetching child users:", error);
     res.status(500).json({ message: "Failed to fetch child users" });
@@ -88,6 +87,10 @@ export const createChildAccount = async (req, res) => {
 
   if (!parentId) {
     return res.status(403).json({ message: "Unauthorized: Only parents can create child accounts" });
+  }
+
+  if (!username || !password || !displayName) {
+    return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
@@ -109,7 +112,9 @@ export const createChildAccount = async (req, res) => {
       displayName,
       role: "child",
       isParent: false,
-      parentId
+      parentId,
+      email: `${username}@child.local`, // ✅ Fills in required NOT NULL column
+      createdAt: new Date()
     }).returning();
 
     res.status(201).json({ message: "Child account created", child: insertedUser[0] });

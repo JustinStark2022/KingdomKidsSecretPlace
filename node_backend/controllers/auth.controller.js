@@ -1,6 +1,6 @@
-
 // node_backend/controllers/auth.controller.js
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { db } from '../db/index.js';
 import { users } from '../shared/schema.js';
 import { eq } from 'drizzle-orm';
@@ -67,7 +67,24 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    res.json({ user }); // 🔐 Use token/session for production
+    // ✅ Create JWT
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // ✅ Return token and user profile (excluding password)
+    const { password: _, ...safeUser } = user;
+
+    res.status(200).json({
+      token,
+      user: safeUser,
+    });
   } catch (error) {
     console.error('❌ Login error:', error);
     res.status(500).json({ error: error.message });

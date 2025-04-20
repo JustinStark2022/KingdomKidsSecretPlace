@@ -19,7 +19,7 @@ import {
 } from "@/components/ui";
 import { useQuery } from "@tanstack/react-query";
 import { User } from "@/types/user";
-import { Settings as UserSettings } from "@shared/schema.ts";
+import { UserSettings } from "@/types/settings.ts";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -47,6 +47,13 @@ const Settings: React.FC = () => {
   const { data: settings } = useQuery<UserSettings>({
     queryKey: ["/api/settings"],
     enabled: !!currentUser
+  });
+
+  // ✅ Get list of children for logged-in parent
+  const { data: children, refetch: refetchChildren } = useQuery({
+    queryKey: ["/api/users/children"],
+    queryFn: () => apiRequest("GET", "/api/users/children"),
+    enabled: !!currentUser && currentUser.role === "parent",
   });
 
   const handleToggleSetting = (key: keyof UserSettings, value: boolean | number) => {
@@ -167,34 +174,28 @@ const Settings: React.FC = () => {
                     onClick={async () => {
                       setCreatingChild(true);
                       try {
-                        const res = await apiRequest("POST", "/api/users/create-child", {
+                        const data = await apiRequest("POST", "/api/users/create-child", {
                           username: newChildUsername,
                           password: newChildPassword,
-                          displayName: newChildDisplayName
+                          displayName: newChildDisplayName,
                         });
 
-                        const data = await res.json();
+                        toast({
+                          title: "Child created!",
+                          description: `${data.child.displayName} added.`,
+                        });
 
-                        if (res.ok) {
-                          toast({
-                            title: "Child created!",
-                            description: `${data.child.displayName} added.`,
-                          });
-                          setNewChildUsername("");
-                          setNewChildPassword("");
-                          setNewChildDisplayName("");
-                        } else {
-                          toast({
-                            title: "Error",
-                            description: data?.message || "Failed to create child.",
-                            variant: "destructive"
-                          });
-                        }
-                      } catch {
+                        setNewChildUsername("");
+                        setNewChildPassword("");
+                        setNewChildDisplayName("");
+
+                        refetchChildren(); // ✅ Refresh child list
+                      } catch (error) {
                         toast({
                           title: "Error",
-                          description: "Something went wrong.",
-                          variant: "destructive"
+                          description:
+                            error instanceof Error ? error.message : "Failed to create child.",
+                          variant: "destructive",
                         });
                       } finally {
                         setCreatingChild(false);
@@ -214,9 +215,28 @@ const Settings: React.FC = () => {
                   </Button>
                 </div>
               </div>
+
+              {/* ✅ Show linked children */}
+              <div className="mt-6">
+                <h3 className="font-semibold mb-2">Linked Children</h3>
+                {children?.children?.length > 0 ? (
+                  <ul className="list-disc list-inside text-muted-foreground">
+                    {children.children.map((child) => (
+                      <li key={child.id}>
+                        {child.displayName || child.username} ({child.username})
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted-foreground italic">
+                    No children linked to your account yet.
+                  </p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
+
 
         <TabsContent value="content">
           <Card className="hover:border-primary shadow-xl max-w-3xl ml-6">
