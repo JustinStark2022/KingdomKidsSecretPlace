@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, Button } from "@/components/ui";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { BookOpen, Trophy, ArrowRight, Sparkles, Activity, Clock, MessageSquare, Users } from "lucide-react";
+import { BookOpen, Trophy, Sparkles, Activity, Clock, MessageSquare, Users } from "lucide-react";
 
 const ChildDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
