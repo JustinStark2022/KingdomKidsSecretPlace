@@ -8,14 +8,14 @@ const ChildDashboard: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center p-6"
+      className="absolute w-full  min-h-screen h-full  bg-cover bg-center overflow-hidden p-6"
       style={{ backgroundImage: "url('/images/childdashboardbg.png')" }}
     >
       <div>
         <h1 className="pl-6 pt-4 text-5xl font-bold mb-2">
           <span className="text-primary logo-outline neon-text">My Secret Place</span>
         </h1>
-        <p className="pl-6 text-2xl dark:text-white font-bold logo-outline">
+        <p className="pl-6 pt-4 pb-4 text-2xl dark:text-white font-bold logo-outline">
           Where Kingdom Kids grow in faith & fun! ✨
         </p>
       </div>
@@ -85,10 +85,10 @@ const ChildDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="devotional">
-          <Card className="max-w-2xl mx-auto bg-white/70 backdrop-blur-md">
+          <Card className="max-w-2xl mx-auto card  dark:bg-black backdrop-blur-md">
             <CardContent className="p-6">
-              <h2 className="text-2xl font-bold text-primary mb-4">Devotional of the Day</h2>
-              <p className="text-muted-foreground">
+              <h2 className="text-3xl font-bold logo-outline neon-text text-primary mb-4">Devotional of the Day</h2>
+              <p className="dark:text-white logo-outline text-black text-muted-foreground">
                 "I praise you because I am fearfully and wonderfully made; your works are wonderful, I know that full well." – Psalm 139:14
               </p>
             </CardContent>
@@ -96,7 +96,7 @@ const ChildDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="games">
-          <Card className="max-w-2xl mx-auto bg-white/70 backdrop-blur-md">
+          <Card className="max-w-2xl mx-auto  dark:bg-black  bg-white/70 ">
             <CardContent className="p-6">
               <h2 className="text-2xl font-bold text-yellow-600 mb-4">Game Challenge Center</h2>
               <p className="text-muted-foreground mb-2">🎯 You’ve earned 4 out of 10 stars!</p>
@@ -109,7 +109,7 @@ const ChildDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="verses">
-          <Card className="max-w-2xl mx-auto bg-white/70 backdrop-blur-md">
+          <Card className="max-w-2xl mx-auto  dark:bg-black bg-white/70 backdrop-blur-md">
             <CardContent className="p-6">
               <h2 className="text-2xl font-bold text-purple-600 mb-4">Your Memory Verses</h2>
               <ul className="list-disc list-inside text-muted-foreground space-y-1">
