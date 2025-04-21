@@ -1,76 +1,70 @@
-// client/src/App.tsx
 import { Switch, Route } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
-import Layout from "./components/layout/Layout";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
-import Bible from "./pages/Bible";
-import Prayer from "./pages/Prayer";
-import Devotionals from "./pages/Devotionals";
-import Lessons from "./pages/Lessons";
-import Support from "./pages/Support";
-import Settings from "./pages/Settings";
-import About from "./pages/About";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import { UserProvider } from "./context/UserContext";
-import ProtectedRoute from "./components/routing/ProtectedRoute";
+import AuthPage from "@/pages/auth-page";
+import ParentDashboard from "@/pages/parent-dashboard";
+import ChildDashboard from "@/pages/child-dashboard";
+import BibleReader from "@/pages/bible-reader";
+import Lessons from "@/pages/lessons";
+import Settings from "@/pages/settings";
+import Support from "@/pages/support";
+import ContentMonitoring from "@/pages/content-monitoring";
+import ScreenTime from "@/pages/screen-time";
+import LocationTracking from "@/pages/location-tracking";
+import ChildAccounts from "@/pages/child-accounts";
+import { ProtectedRoute } from "./lib/protected-route";
+import { useAuth } from "@/hooks/use-auth";
+
+function Router() {
+  const { user } = useAuth();
+  
+  // User is authenticated, render dashboard based on role
+  return (
+    <Switch>
+      {/* Auth route - redirects to dashboard if already logged in */}
+      <Route path="/auth">
+        {user ? (
+          user.role === "parent" ? <Redirect to="/dashboard" /> : <Redirect to="/child-dashboard" />
+        ) : (
+          <AuthPage />
+        )}
+      </Route>
+      
+      {/* Parent Routes */}
+      <ProtectedRoute path="/" component={() => <Redirect to="/dashboard" />} />
+      <ProtectedRoute path="/dashboard" component={ParentDashboard} requireParent={true} />
+      <ProtectedRoute path="/children" component={ChildAccounts} requireParent={true} />
+      <ProtectedRoute path="/screentime" component={ScreenTime} requireParent={true} />
+      <ProtectedRoute path="/monitoring" component={ContentMonitoring} requireParent={true} />
+      <ProtectedRoute path="/location" component={LocationTracking} requireParent={true} />
+      <ProtectedRoute path="/settings" component={Settings} requireParent={true} />
+      
+      {/* Shared Routes */}
+      <ProtectedRoute path="/bible" component={BibleReader} />
+      <ProtectedRoute path="/lessons" component={Lessons} />
+      <ProtectedRoute path="/support" component={Support} />
+      
+      {/* Child Routes */}
+      <ProtectedRoute path="/child-dashboard" component={ChildDashboard} />
+      
+      {/* Fallback to 404 */}
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+function Redirect({ to }: { to: string }) {
+  window.location.href = to;
+  return null;
+}
 
 function App() {
   return (
-    <UserProvider>
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-
-        {/* Everything else uses layout */}
-        <Route>
-          <Layout>
-            <Switch>
-              <Route path="/" component={Home} />
-              <Route path="/about" component={About} />
-              <Route path="/support" component={Support} />
-
-              {/* ✅ Protected Pages */}
-              <Route path="/dashboard">
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              </Route>
-              <Route path="/bible">
-                <ProtectedRoute>
-                  <Bible />
-                </ProtectedRoute>
-              </Route>
-              <Route path="/prayer">
-                <ProtectedRoute>
-                  <Prayer />
-                </ProtectedRoute>
-              </Route>
-              <Route path="/devotionals">
-                <ProtectedRoute>
-                  <Devotionals />
-                </ProtectedRoute>
-              </Route>
-              <Route path="/lessons">
-                <ProtectedRoute>
-                  <Lessons />
-                </ProtectedRoute>
-              </Route>
-              <Route path="/settings">
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              </Route>
-
-              <Route component={NotFound} />
-            </Switch>
-          </Layout>
-        </Route>
-      </Switch>
+    <TooltipProvider>
       <Toaster />
-    </UserProvider>
+      <Router />
+    </TooltipProvider>
   );
 }
 

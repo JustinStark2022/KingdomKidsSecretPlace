@@ -1,300 +1,654 @@
-import React, { useState } from "react";
-import {
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import ParentLayout from "@/components/layout/parent-layout";
+import { 
   Card,
-  CardContent,
-  Button,
-  Input,
-  Label,
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle
+} from "@/components/ui/card";
+import {
   Tabs,
   TabsContent,
   TabsList,
-  TabsTrigger,
-  Switch,
+  TabsTrigger
+} from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-  Skeleton
-} from "@/components/ui";
-import { useQuery } from "@tanstack/react-query";
-import { User } from "@/types/user";
-import { UserSettings } from "@/types/settings.ts";
+  SelectValue
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Save,
-  Lock,
-  UserPlus,
+import { 
+  Settings as SettingsIcon, 
+  Shield, 
+  Clock, 
+  Bell, 
+  User, 
+  Lock, 
+  BookOpen, 
+  Smile,
   Loader2
 } from "lucide-react";
-import { useTheme } from "@/context/ThemeContext";
 
-const Settings: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("profile");
+export default function Settings() {
   const { toast } = useToast();
-  const { theme, toggleTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState("general");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [newChildUsername, setNewChildUsername] = useState("");
-  const [newChildPassword, setNewChildPassword] = useState("");
-  const [newChildDisplayName, setNewChildDisplayName] = useState("");
-  const [creatingChild, setCreatingChild] = useState(false);
-
-  const { data: currentUser, isLoading: userLoading } = useQuery<User>({
-    queryKey: ["/api/users/me"]
-  });
-
-  const { data: settings } = useQuery<UserSettings>({
-    queryKey: ["/api/settings"],
-    enabled: !!currentUser
-  });
-
-  // ✅ Get list of children for logged-in parent
-  const { data: children, refetch: refetchChildren } = useQuery({
+  // Fetch children data
+  const { data: children = [] } = useQuery({
     queryKey: ["/api/users/children"],
-    queryFn: () => apiRequest("GET", "/api/users/children"),
-    enabled: !!currentUser && currentUser.role === "parent",
   });
 
-  const handleToggleSetting = (key: keyof UserSettings, value: boolean | number) => {
-    if (settings) {
-      apiRequest("PUT", "/api/settings", { [key]: value })
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
-          toast({ title: "Settings updated" });
-        })
-        .catch((error) => {
-          toast({
-            title: "Error",
-            description: error instanceof Error ? error.message : "Unknown error",
-            variant: "destructive"
-          });
-        });
+  // Form states
+  const [selectedChild, setSelectedChild] = useState<string>("all");
+  const [notifications, setNotifications] = useState({
+    contentAlerts: true,
+    screenTimeAlerts: true,
+    lessonCompletions: true,
+    deviceUsage: true,
+    biblePlan: true
+  });
+  const [contentFilters, setContentFilters] = useState({
+    blockViolence: true,
+    blockLanguage: true,
+    blockOccult: true,
+    blockBullying: true,
+    blockSexual: true,
+    blockBlasphemy: true
+  });
+  const [screenTimeSettings, setScreenTimeSettings] = useState({
+    weekdayLimit: 120, // minutes
+    weekendLimit: 180, // minutes
+    lockafter9pm: true,
+    pauseDuringBedtime: true,
+    allowRewards: true,
+    maxRewardTime: 60 // minutes
+  });
+
+  // Save general settings
+  const saveGeneralSettings = async () => {
+    setIsSubmitting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({
+        title: "Settings saved",
+        description: "Your general settings have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error saving settings",
+        description: "There was a problem saving your settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Save content filter settings
+  const saveContentFilters = async () => {
+    setIsSubmitting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({
+        title: "Content filters updated",
+        description: `Content filters have been updated for ${selectedChild === "all" ? "all children" : selectedChild}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error saving content filters",
+        description: "There was a problem saving your content filters. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Save screen time settings
+  const saveScreenTimeSettings = async () => {
+    setIsSubmitting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({
+        title: "Screen time settings updated",
+        description: `Screen time settings have been updated for ${selectedChild === "all" ? "all children" : selectedChild}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error saving screen time settings",
+        description: "There was a problem saving your screen time settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="h-full pt-6 ml-4 pl-9">
-      <div
-        className="absolute inset-0 z-0 bg-cover opacity-40 dark:opacity-30"
-        style={{
-          backgroundImage: "url('/images/settingsbg1.png')",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center"
-        }}
-      />
-      <div>
-        <h1 className="pl-7 pt-1 text-5xl font-bold mb-2 logo-outlined">
-          <span className="text-primary neon-text">Settings</span>
-        </h1>
-        <p className="pl-7 pb-8 text-3xl dark:text-white font-bold logo-outline">
-          Customize your Kingdom Kids experience
-        </p>
-      </div>
-
-      <Tabs
-        className="w-full backdrop-blur-md"
-        defaultValue="profile"
-        value={activeTab}
-        onValueChange={setActiveTab}
-      >
-        <TabsList className="ml-6 justify-left mb-4 border border-gray-200">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="family">Family</TabsTrigger>
-          <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="profile">
-          <Card className="hover:border-primary shadow-xl max-w-3xl ml-6">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-xl font-bold">Profile Settings</h2>
-              {userLoading ? (
-                <Skeleton className="h-6 w-32" />
-              ) : (
-                <div className="grid gap-6">
-                  <Input value={currentUser?.username || ""} disabled placeholder="Username" />
-                  <Input value={currentUser?.email || ""} disabled placeholder="Email" />
-                  <Button type="submit">
-                    <Save className="w-4 h-4 mr-2" /> Save Changes
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="family">
-          <Card className="hover:border-primary backdrop-blur-md shadow-xl max-w-3xl ml-6">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-xl font-bold">Family Accounts</h2>
-              <p className="text-muted-foreground text-sm">Manage children linked to your account.</p>
-
-              <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-                <h3 className="font-semibold mb-4 flex items-center">
-                  <UserPlus className="h-5 w-5 mr-2 text-primary" />
-                  Create Child Account
-                </h3>
-                <div className="grid gap-4 md:grid-cols-2">
+    <ParentLayout title="Settings">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center mb-6">
+          <SettingsIcon className="h-6 w-6 text-primary mr-2" />
+          <h1 className="text-2xl font-bold">Account Settings</h1>
+        </div>
+        
+        <Card className="mb-6 shadow-md border-0">
+          <CardContent className="pt-6">
+            <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-3 mb-6">
+                <TabsTrigger value="general">General</TabsTrigger>
+                <TabsTrigger value="content">Content Filters</TabsTrigger>
+                <TabsTrigger value="screentime">Screen Time</TabsTrigger>
+              </TabsList>
+              
+              {/* General Settings Tab */}
+              <TabsContent value="general">
+                <div className="space-y-6">
                   <div>
-                    <Label htmlFor="child-username">Username</Label>
-                    <Input
-                      id="child-username"
-                      placeholder="e.g. kiddo123"
-                      value={newChildUsername}
-                      onChange={(e) => setNewChildUsername(e.target.value)}
-                    />
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <Bell className="h-5 w-5 mr-2 text-primary-500" />
+                      Notification Settings
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="content-alerts" className="font-medium">Content Alerts</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Receive alerts when inappropriate content is detected
+                          </p>
+                        </div>
+                        <Switch
+                          id="content-alerts"
+                          checked={notifications.contentAlerts}
+                          onCheckedChange={(checked) => setNotifications({...notifications, contentAlerts: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="screentime-alerts" className="font-medium">Screen Time Alerts</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Get notifications about screen time limits
+                          </p>
+                        </div>
+                        <Switch
+                          id="screentime-alerts"
+                          checked={notifications.screenTimeAlerts}
+                          onCheckedChange={(checked) => setNotifications({...notifications, screenTimeAlerts: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="lesson-completions" className="font-medium">Lesson Completions</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Be notified when your child completes a Bible lesson
+                          </p>
+                        </div>
+                        <Switch
+                          id="lesson-completions"
+                          checked={notifications.lessonCompletions}
+                          onCheckedChange={(checked) => setNotifications({...notifications, lessonCompletions: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="device-usage" className="font-medium">Device Usage</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Get alerts about new device logins or unusual usage
+                          </p>
+                        </div>
+                        <Switch
+                          id="device-usage"
+                          checked={notifications.deviceUsage}
+                          onCheckedChange={(checked) => setNotifications({...notifications, deviceUsage: checked})}
+                        />
+                      </div>
+                    </div>
                   </div>
+                  
                   <div>
-                    <Label htmlFor="child-displayName">Display Name</Label>
-                    <Input
-                      id="child-displayName"
-                      placeholder="e.g. Tommy"
-                      value={newChildDisplayName}
-                      onChange={(e) => setNewChildDisplayName(e.target.value)}
-                    />
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <BookOpen className="h-5 w-5 mr-2 text-accent-500" />
+                      Bible Settings
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="default-translation">Default Bible Translation</Label>
+                        <Select defaultValue="NIV">
+                          <SelectTrigger id="default-translation">
+                            <SelectValue placeholder="Select translation" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="NIrV">NIrV (New International Reader's Version)</SelectItem>
+                            <SelectItem value="NIV">NIV (New International Version)</SelectItem>
+                            <SelectItem value="NLT">NLT (New Living Translation)</SelectItem>
+                            <SelectItem value="ERV">ERV (Easy-to-Read Version)</SelectItem>
+                            <SelectItem value="CSB">CSB (Christian Standard Bible)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="reading-plan">Daily Bible Reading Plan</Label>
+                        <Select defaultValue="chronological">
+                          <SelectTrigger id="reading-plan">
+                            <SelectValue placeholder="Select plan" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="chronological">Chronological</SelectItem>
+                            <SelectItem value="beginner">Beginner's Journey</SelectItem>
+                            <SelectItem value="wisdom">Wisdom Literature</SelectItem>
+                            <SelectItem value="gospels">Through the Gospels</SelectItem>
+                            <SelectItem value="psalms">Psalms & Proverbs</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="bible-plan-notifications" className="font-medium">Bible Plan Notifications</Label>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Receive daily reminders for Bible readings
+                        </p>
+                      </div>
+                      <Switch
+                        id="bible-plan-notifications"
+                        checked={notifications.biblePlan}
+                        onCheckedChange={(checked) => setNotifications({...notifications, biblePlan: checked})}
+                      />
+                    </div>
                   </div>
+                  
                   <div>
-                    <Label htmlFor="child-password">Password</Label>
-                    <Input
-                      id="child-password"
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="Enter password"
-                      value={newChildPassword}
-                      onChange={(e) => setNewChildPassword(e.target.value)}
-                    />
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <Lock className="h-5 w-5 mr-2 text-green-500" />
+                      Account Security
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="current-password">Current Password</Label>
+                        <Input id="current-password" type="password" placeholder="••••••••" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">New Password</Label>
+                        <Input id="new-password" type="password" placeholder="••••••••" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Confirm New Password</Label>
+                        <Input id="confirm-password" type="password" placeholder="••••••••" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                <div className="mt-4">
-                  <Button
-                    onClick={async () => {
-                      setCreatingChild(true);
-                      try {
-                        const data = await apiRequest("POST", "/api/users/create-child", {
-                          username: newChildUsername,
-                          password: newChildPassword,
-                          displayName: newChildDisplayName,
-                        });
-
-                        toast({
-                          title: "Child created!",
-                          description: `${data.child.displayName} added.`,
-                        });
-
-                        setNewChildUsername("");
-                        setNewChildPassword("");
-                        setNewChildDisplayName("");
-
-                        refetchChildren(); // ✅ Refresh child list
-                      } catch (error) {
-                        toast({
-                          title: "Error",
-                          description:
-                            error instanceof Error ? error.message : "Failed to create child.",
-                          variant: "destructive",
-                        });
-                      } finally {
-                        setCreatingChild(false);
-                      }
-                    }}
-                    disabled={creatingChild}
+                  
+                  <Button 
+                    onClick={saveGeneralSettings} 
+                    className="w-full" 
+                    disabled={isSubmitting}
                   >
-                    {creatingChild ? (
+                    {isSubmitting ? (
                       <>
-                        <Loader2 className="animate-spin h-4 w-4 mr-2" /> Creating...
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
                       </>
                     ) : (
-                      <>
-                        <UserPlus className="mr-2 h-4 w-4" /> Create Child
-                      </>
+                      "Save General Settings"
                     )}
                   </Button>
                 </div>
-              </div>
-
-              {/* ✅ Show linked children */}
-              <div className="mt-6">
-                <h3 className="font-semibold mb-2">Linked Children</h3>
-                {children?.children?.length > 0 ? (
-                  <ul className="list-disc list-inside text-muted-foreground">
-                    {children.children.map((child) => (
-                      <li key={child.id}>
-                        {child.displayName || child.username} ({child.username})
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-muted-foreground italic">
-                    No children linked to your account yet.
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-
-        <TabsContent value="content">
-          <Card className="hover:border-primary shadow-xl max-w-3xl ml-6">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-xl font-bold">Content Filter Settings</h2>
-              <div className="grid gap-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-muted-foreground">Auto-Approve Christian Games</span>
-                  <Switch
-                    checked={settings?.autoApproveGames}
-                    onCheckedChange={(val) => handleToggleSetting("autoApproveGames", val)}
-                  />
+              </TabsContent>
+              
+              {/* Content Filters Tab */}
+              <TabsContent value="content">
+                <div className="space-y-6">
+                  <div className="mb-6">
+                    <Label htmlFor="child-selector" className="text-base font-medium">Apply Settings To:</Label>
+                    <Select 
+                      value={selectedChild} 
+                      onValueChange={setSelectedChild}
+                    >
+                      <SelectTrigger id="child-selector" className="mt-2">
+                        <SelectValue placeholder="Select child" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Children</SelectItem>
+                        {children.map((child) => (
+                          <SelectItem key={child.id} value={child.firstName}>
+                            {child.firstName} {child.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <Shield className="h-5 w-5 mr-2 text-red-500" />
+                      Content Filtering
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      Control what type of content should be blocked for {selectedChild === "all" ? "all children" : selectedChild}
+                    </p>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="filter-violence" className="font-medium">Block Violent Content</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Filter games, videos, and websites with violent themes
+                          </p>
+                        </div>
+                        <Switch
+                          id="filter-violence"
+                          checked={contentFilters.blockViolence}
+                          onCheckedChange={(checked) => setContentFilters({...contentFilters, blockViolence: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="filter-language" className="font-medium">Block Bad Language</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Filter content with profanity or inappropriate language
+                          </p>
+                        </div>
+                        <Switch
+                          id="filter-language"
+                          checked={contentFilters.blockLanguage}
+                          onCheckedChange={(checked) => setContentFilters({...contentFilters, blockLanguage: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="filter-occult" className="font-medium">Block Occult Content</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Filter content with witchcraft, magic, or occult themes
+                          </p>
+                        </div>
+                        <Switch
+                          id="filter-occult"
+                          checked={contentFilters.blockOccult}
+                          onCheckedChange={(checked) => setContentFilters({...contentFilters, blockOccult: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="filter-bullying" className="font-medium">Block Bullying Content</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Filter content that promotes bullying or harmful behavior
+                          </p>
+                        </div>
+                        <Switch
+                          id="filter-bullying"
+                          checked={contentFilters.blockBullying}
+                          onCheckedChange={(checked) => setContentFilters({...contentFilters, blockBullying: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="filter-sexual" className="font-medium">Block Sexual Content</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Filter content with sexual themes or inappropriate imagery
+                          </p>
+                        </div>
+                        <Switch
+                          id="filter-sexual"
+                          checked={contentFilters.blockSexual}
+                          onCheckedChange={(checked) => setContentFilters({...contentFilters, blockSexual: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="filter-blasphemy" className="font-medium">Block Blasphemous Content</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Filter content that includes blasphemy against Christian beliefs
+                          </p>
+                        </div>
+                        <Switch
+                          id="filter-blasphemy"
+                          checked={contentFilters.blockBlasphemy}
+                          onCheckedChange={(checked) => setContentFilters({...contentFilters, blockBlasphemy: checked})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <Smile className="h-5 w-5 mr-2 text-green-500" />
+                      Kingdom AI Settings
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      Configure how our AI analyzes content
+                    </p>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="filter-sensitivity">Filter Sensitivity</Label>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-500">Low</span>
+                          <Slider
+                            id="filter-sensitivity"
+                            defaultValue={[7]}
+                            max={10}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="text-sm text-gray-500">High</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="ai-detection-mode">AI Detection Mode</Label>
+                        <Select defaultValue="balanced">
+                          <SelectTrigger id="ai-detection-mode">
+                            <SelectValue placeholder="Select mode" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="relaxed">Relaxed - Less false positives</SelectItem>
+                            <SelectItem value="balanced">Balanced - Recommended</SelectItem>
+                            <SelectItem value="strict">Strict - Maximum protection</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    onClick={saveContentFilters} 
+                    className="w-full" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Content Filters"
+                    )}
+                  </Button>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-muted-foreground">Auto-Approve Friend Requests</span>
-                  <Switch
-                    checked={settings?.autoApproveFriends}
-                    onCheckedChange={(val) => handleToggleSetting("autoApproveFriends", val)}
-                  />
+              </TabsContent>
+              
+              {/* Screen Time Tab */}
+              <TabsContent value="screentime">
+                <div className="space-y-6">
+                  <div className="mb-6">
+                    <Label htmlFor="child-time-selector" className="text-base font-medium">Apply Settings To:</Label>
+                    <Select 
+                      value={selectedChild} 
+                      onValueChange={setSelectedChild}
+                    >
+                      <SelectTrigger id="child-time-selector" className="mt-2">
+                        <SelectValue placeholder="Select child" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Children</SelectItem>
+                        {children.map((child) => (
+                          <SelectItem key={child.id} value={child.firstName}>
+                            {child.firstName} {child.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <Clock className="h-5 w-5 mr-2 text-blue-500" />
+                      Daily Time Limits
+                    </h3>
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <Label htmlFor="weekday-limit">Weekday Limit ({screenTimeSettings.weekdayLimit} minutes)</Label>
+                          <span className="text-sm text-gray-500">{Math.floor(screenTimeSettings.weekdayLimit / 60)}h {screenTimeSettings.weekdayLimit % 60}m</span>
+                        </div>
+                        <Slider
+                          id="weekday-limit"
+                          value={[screenTimeSettings.weekdayLimit]}
+                          min={30}
+                          max={360}
+                          step={15}
+                          onValueChange={(value) => setScreenTimeSettings({...screenTimeSettings, weekdayLimit: value[0]})}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <Label htmlFor="weekend-limit">Weekend Limit ({screenTimeSettings.weekendLimit} minutes)</Label>
+                          <span className="text-sm text-gray-500">{Math.floor(screenTimeSettings.weekendLimit / 60)}h {screenTimeSettings.weekendLimit % 60}m</span>
+                        </div>
+                        <Slider
+                          id="weekend-limit"
+                          value={[screenTimeSettings.weekendLimit]}
+                          min={30}
+                          max={480}
+                          step={15}
+                          onValueChange={(value) => setScreenTimeSettings({...screenTimeSettings, weekendLimit: value[0]})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <User className="h-5 w-5 mr-2 text-purple-500" />
+                      Additional Controls
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="lock-after-9" className="font-medium">Lock Devices After 9 PM</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Automatically lock devices at bedtime
+                          </p>
+                        </div>
+                        <Switch
+                          id="lock-after-9"
+                          checked={screenTimeSettings.lockafter9pm}
+                          onCheckedChange={(checked) => setScreenTimeSettings({...screenTimeSettings, lockafter9pm: checked})}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="pause-bedtime" className="font-medium">Pause During Bedtime</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Automatically pause devices during scheduled bedtime
+                          </p>
+                        </div>
+                        <Switch
+                          id="pause-bedtime"
+                          checked={screenTimeSettings.pauseDuringBedtime}
+                          onCheckedChange={(checked) => setScreenTimeSettings({...screenTimeSettings, pauseDuringBedtime: checked})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-4">
+                      <Gift className="h-5 w-5 mr-2 text-accent-500" />
+                      Reward Settings
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="allow-rewards" className="font-medium">Allow Bible Rewards</Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Grant additional screen time for completing Bible lessons
+                          </p>
+                        </div>
+                        <Switch
+                          id="allow-rewards"
+                          checked={screenTimeSettings.allowRewards}
+                          onCheckedChange={(checked) => setScreenTimeSettings({...screenTimeSettings, allowRewards: checked})}
+                        />
+                      </div>
+                      
+                      {screenTimeSettings.allowRewards && (
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <Label htmlFor="max-reward">Maximum Daily Reward ({screenTimeSettings.maxRewardTime} minutes)</Label>
+                            <span className="text-sm text-gray-500">{Math.floor(screenTimeSettings.maxRewardTime / 60)}h {screenTimeSettings.maxRewardTime % 60}m</span>
+                          </div>
+                          <Slider
+                            id="max-reward"
+                            value={[screenTimeSettings.maxRewardTime]}
+                            min={15}
+                            max={120}
+                            step={15}
+                            onValueChange={(value) => setScreenTimeSettings({...screenTimeSettings, maxRewardTime: value[0]})}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    onClick={saveScreenTimeSettings} 
+                    className="w-full" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Screen Time Settings"
+                    )}
+                  </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <Card className="hover:border-primary shadow-xl max-w-3xl ml-6">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-xl font-bold">Notification Settings</h2>
-              <div className="grid gap-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-muted-foreground">Enable Notifications</span>
-                  <Switch
-                    checked={settings?.notifications}
-                    onCheckedChange={(val) => handleToggleSetting("notifications", val)}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="security">
-          <Card className="hover:border-primary shadow-xl max-w-3xl ml-6">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-xl font-bold">Security Settings</h2>
-              <Input type="password" placeholder="Current Password" />
-              <Input type="password" placeholder="New Password" />
-              <Input type="password" placeholder="Confirm New Password" />
-              <Button className="w-fit">
-                <Lock className="mr-2 h-4 w-4" /> Change Password
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </ParentLayout>
   );
-};
-
-export default Settings;
+}

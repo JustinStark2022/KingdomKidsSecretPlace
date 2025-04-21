@@ -1,322 +1,397 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { useState } from "react";
+import ParentLayout from "@/components/layout/parent-layout";
+import ChildLayout from "@/components/layout/child-layout";
+import { useAuth } from "@/hooks/use-auth";
 import { 
-  Heart, 
-  Shield, 
-  BookOpen,
-  MessageSquare, 
-  Award, 
-  Users, 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  CardDescription,
+  CardFooter
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  HelpCircle, 
+  Phone, 
   Mail, 
-  HelpCircle,
-  ExternalLink,
-  Search,
-  LifeBuoy,
-  Clock,
-  FileQuestion,
-  CheckCircle,
-  Gamepad2,
-  UserPlus
+  MessageSquare, 
+  FileQuestion, 
+  Loader2 
 } from "lucide-react";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
+// FAQ questions and answers
+const faqItems = [
+  {
+    question: "How does content filtering work?",
+    answer: "Our Kingdom AI technology analyzes games, videos, and websites that your child accesses. It uses a combination of keyword detection, image analysis, and behavioral patterns to identify content that conflicts with biblical values. When potentially inappropriate content is detected, it's flagged for your review and optionally blocked based on your settings."
+  },
+  {
+    question: "How do rewards work?",
+    answer: "When your child completes Bible lessons or memorizes verses, they earn additional screen time as a reward. The default is 15 minutes per lesson completed. You can adjust the reward amount in the Settings. These rewards are automatically added to their daily screen time allowance."
+  },
+  {
+    question: "Can I monitor multiple children?",
+    answer: "Yes! You can create and manage multiple child accounts under your parent account. Each child can have their own personalized settings, screen time limits, and progress tracking. To add a child account, go to the Child Accounts section in the parent dashboard."
+  },
+  {
+    question: "How accurate is the content filtering?",
+    answer: "While our Kingdom AI strives to provide accurate content filtering, no system is perfect. We recommend reviewing flagged content before making final decisions. You can adjust sensitivity levels in Settings to reduce false positives or increase protection based on your family's needs."
+  },
+  {
+    question: "What Bible translations are available?",
+    answer: "We offer several child-friendly Bible translations including NIrV (New International Reader's Version), NLT (New Living Translation), ERV (Easy-to-Read Version), NIV (New International Version), and CSB (Christian Standard Bible). You can set default translations in the Settings page."
+  },
+  {
+    question: "Is my child's data secure?",
+    answer: "Yes, we take data privacy very seriously. All data is encrypted and securely stored. We do not share your child's information with third parties. You can review our complete privacy policy for more details."
+  }
+];
 
-const Support: React.FC = () => {
+export default function Support() {
+  const { user } = useAuth();
+  const isChild = user?.role === "child";
+  const { toast } = useToast();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!name || !email || !message) {
+      toast({
+        title: "Missing information",
+        description: "Please fill out all fields in the contact form.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Success message
+      toast({
+        title: "Message sent!",
+        description: "We've received your message and will respond soon.",
+      });
+      
+      // Reset form
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (error) {
+      toast({
+        title: "Error sending message",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const Layout = isChild ? ChildLayout : ParentLayout;
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">
-          <span className="high-contrast-text text-primary neon-text">Support</span> Kingdom Kids
-        </h1>
-        <p className="text-muted-foreground">
-          Help and support resources for the Kingdom Kids Secret Place application
-        </p>
-      </div>
-      
-      
-      <div className="pt-6">
-        <div className="flex items-center space-x-2 mb-6">
-          <div className="bg-primary/10 p-2 rounded-full">
-            <LifeBuoy className="h-6 w-6 text-primary high-contrast-text" />
-          </div>
-          <h2 className="text-2xl font-bold">Help & Support</h2>
+    <Layout title="Support">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center mb-6">
+          <HelpCircle className="h-6 w-6 text-primary mr-2" />
+          <h1 className="text-2xl font-bold">Help & Support</h1>
         </div>
-
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input 
-            className="pl-10 bg-background" 
-            placeholder="Search for help topics..."
-          />
-        </div>
-
-        <Tabs defaultValue="parents" className="space-y-4">
-          <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="parents" className="text-base">
-              <Shield className="mr-2 h-4 w-4 text-primary high-contrast-text" />
-              For Parents
-            </TabsTrigger>
-            <TabsTrigger value="children" className="text-base">
-              <Gamepad2 className="mr-2 h-4 w-4 text-primary high-contrast-text" />
-              For Children
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="parents" className="space-y-4">
-            <Card className="border border-primary/10">
-              <CardHeader className="pb-3">
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Main Content - FAQs */}
+          <div className="md:col-span-2">
+            <Card className="border-0 shadow-md mb-6">
+              <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Shield className="h-5 w-5 mr-2 text-primary high-contrast-text" />
-                  <span>Parental Controls</span>
+                  <FileQuestion className="h-5 w-5 mr-2 text-primary" />
+                  Frequently Asked Questions
                 </CardTitle>
+                <CardDescription>
+                  Find answers to common questions about Kingdom Kids
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <FileQuestion className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Setting Up Game Monitoring</p>
-                        <p className="text-xs text-muted-foreground">Learn how to monitor your child's gaming activity</p>
-                      </div>
-                    </div>
-                  </Button>
-                  
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <UserPlus className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Friend Request Approvals</p>
-                        <p className="text-xs text-muted-foreground">How to review and manage friend requests</p>
-                      </div>
-                    </div>
-                  </Button>
-                  
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <MessageSquare className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Chat Monitoring</p>
-                        <p className="text-xs text-muted-foreground">How to review chat conversations and set limits</p>
-                      </div>
-                    </div>
-                  </Button>
-                  
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <Clock className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Screen Time Management</p>
-                        <p className="text-xs text-muted-foreground">Setting healthy limits and reward time</p>
-                      </div>
-                    </div>
-                  </Button>
-                </div>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  {faqItems.map((item, index) => (
+                    <AccordionItem key={index} value={`item-${index}`}>
+                      <AccordionTrigger className="text-left font-medium">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-600 dark:text-gray-400">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </CardContent>
             </Card>
-          </TabsContent>
-          
-          <TabsContent value="children" className="space-y-4">
-            <Card className="border border-primary/10">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center">
-                  <BookOpen className="h-5 w-5 mr-2 text-primary high-contrast-text" />
-                  <span>Biblical Features</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <CheckCircle className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Earning Rewards</p>
-                        <p className="text-xs text-muted-foreground">How to earn extra game time through Biblical activities</p>
-                      </div>
-                    </div>
-                  </Button>
-                  
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <BookOpen className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Scripture Memorization</p>
-                        <p className="text-xs text-muted-foreground">Tips for memorizing Bible verses effectively</p>
-                      </div>
-                    </div>
-                  </Button>
-                  
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <MessageSquare className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Prayer Journal</p>
-                        <p className="text-xs text-muted-foreground">How to use your digital prayer journal</p>
-                      </div>
-                    </div>
-                  </Button>
-                  
-                  <Button variant="outline" className="justify-start h-auto py-3 px-4">
-                    <div className="flex gap-3 items-start">
-                      <Award className="h-5 w-5 text-primary high-contrast-text" />
-                      <div className="text-left">
-                        <p className="font-semibold">Bible Quizzes</p>
-                        <p className="text-xs text-muted-foreground">How to complete Bible quizzes and earn rewards</p>
-                      </div>
-                    </div>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-      <Card className="border border-primary/10">
-        <CardHeader>
-          <CardTitle className="text-xl">Frequently Asked Questions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="font-semibold">How do I monitor my child’s game activity?</p>
-            <p className="text-muted-foreground text-sm">Go to the Dashboard &gt; Game Analysis tab to review content and approve/block games.</p>
-          </div>
-          <div>
-            <p className="font-semibold">How do rewards work?</p>
-            <p className="text-muted-foreground text-sm">Children earn screen time by completing scripture and lesson goals. Each completed activity grants bonus time.</p>
-          </div>
-          <div>
-            <p className="font-semibold">Can I use this on multiple devices?</p>
-            <p className="text-muted-foreground text-sm">Yes! Simply log in using the same account on another device and your progress will sync.</p>
-          </div>
-          <div>
-            <p className="font-semibold">Is my child's data secure?</p>
-            <p className="text-muted-foreground text-sm">Absolutely. We use secure authentication and don’t sell or share your data with third parties.</p>
-          </div>
-        </CardContent>
-      </Card>
-      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); console.log("Submit form"); }}>
-        <div>
-          <label className="text-sm font-medium">Your Email</label>
-          <Input type="email" required />
-        </div>
-        <div>
-          <label className="text-sm font-medium">Message</label>
-          <textarea
-            rows={4}
-            className="w-full border border-input rounded-md p-2 text-sm bg-background text-foreground"
-            placeholder="How can we help you?"
-            required
-          />
-        </div>
-        <Button type="submit" className="w-full">Send Message</Button>
-      </form>
-      
-      <Card id="contact">
-        <CardContent className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <p>
-                We'd love to hear from you! Whether you have questions about our app, 
-                need technical support, or want to share your testimonial, our team is here to help.
-              </p>
-              
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <Mail className="h-5 w-5 text-primary high-contrast-text mr-2" />
-                  <a href="mailto:support@kingdomkids.com" className="hover:text-primary high-contrast-text">
-                    support@kingdomkids.com
-                  </a>
-                </div>
-                
-                <div className="flex items-center">
-                  <HelpCircle className="h-5 w-5 text-primary high-contrast-text mr-2" />
-                  <a href="#" className="hover:text-primary">
-                    Help Center & FAQs
-                  </a>
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <h3 className="font-bold mb-2">Connect With Us</h3>
-                <div className="flex space-x-4">
-                  <a href="#" className="rounded-full bg-primary/20 p-2 hover:bg-primary/30">
-                    <svg className="h-5 w-5 text-primary high-contrast-text" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                    </svg>
-                  </a>
-                  <a href="#" className="rounded-full bg-primary/20 p-2 hover:bg-primary/30">
-                    <svg className="h-5 w-5 text-primary high-contrast-text" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                    </svg>
-                  </a>
-                  <a href="#" className="rounded-full bg-primary/20 p-2 hover:bg-primary/30">
-                    <svg className="h-5 w-5 text-primary high-contrast-text" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                  </a>
-                  <a href="#" className="rounded-full bg-primary/20 p-2 hover:bg-primary/30">
-                    <svg className="h-5 w-5 text-primary high-contrast-text" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
-                      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
             
-            <div className="space-y-4">
-              <h3 className="font-bold">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="flex items-center text-muted-foreground hover:text-primary">
-                    <ExternalLink className="h-4 w-4 mr-2 text-primary high-contrast-text" />
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center text-muted-foreground hover:text-primary">
-                    <ExternalLink className="h-4 w-4 mr-2 text-primary high-contrast-text" />
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center text-muted-foreground hover:text-primary">
-                    <ExternalLink className="h-4 w-4 mr-2 text-primary high-contrast-text" />
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center text-muted-foreground hover:text-primary">
-                    <ExternalLink className="h-4 w-4 mr-2 text-primary high-contrast-text" />
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center text-muted-foreground hover:text-primary">
-                    <ExternalLink className="h-4 w-4 mr-2 text-primary high-contrast-text" />
-                    Testimonials
-                  </a>
-                </li>
-              </ul>
-            </div>
+            {/* Getting Started Guide (for Parents) */}
+            {!isChild && (
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <MessageSquare className="h-5 w-5 mr-2 text-accent-500" />
+                    Getting Started Guide
+                  </CardTitle>
+                  <CardDescription>
+                    Quick steps to set up Kingdom Kids for your family
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center mr-3">
+                        1
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Create Child Accounts</h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          Start by creating accounts for each of your children in the Child Accounts section. Each child will have their own personalized experience.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex">
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center mr-3">
+                        2
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Configure Content Filters</h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          Adjust the content filtering settings in the Settings page to align with your family values and what's appropriate for your children's ages.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex">
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center mr-3">
+                        3
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Set Screen Time Limits</h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          Establish daily screen time limits for weekdays and weekends. You can also set up rewards for completing Bible lessons.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex">
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center mr-3">
+                        4
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Introduce Your Child to the Platform</h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          Show your child how to log in to their account, access Bible lessons, and understand how they can earn rewards through spiritual growth.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex">
+                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center mr-3">
+                        5
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">Monitor the Dashboard</h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          Check your parent dashboard regularly to review flagged content, screen time usage, and your child's progress with Bible lessons.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Bible Tips (for Children) */}
+            {isChild && (
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-accent-600 dark:text-accent-400">
+                    <MessageSquare className="h-5 w-5 mr-2" />
+                    Bible Study Tips
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-lg bg-accent-50 dark:bg-accent-900/20">
+                      <h3 className="font-medium mb-1 text-accent-700 dark:text-accent-300">Prayer First</h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        Always start your Bible reading with a prayer. Ask God to help you understand His Word.
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 rounded-lg bg-primary-50 dark:bg-primary-900/20">
+                      <h3 className="font-medium mb-1 text-primary-700 dark:text-primary-300">Read Slowly</h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        Don't rush through the Bible. Take your time to think about what each verse means.
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 rounded-lg bg-secondary-50 dark:bg-secondary-900/20">
+                      <h3 className="font-medium mb-1 text-secondary-700 dark:text-secondary-300">Write Things Down</h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        Keep a notebook to write down your favorite verses or questions you have.
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
+                      <h3 className="font-medium mb-1 text-green-700 dark:text-green-300">Share What You Learn</h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        Tell your family about what you read in the Bible today. Sharing helps you remember!
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
-        </CardContent>
-      </Card>
-      
-      <footer className="border-t border-muted py-1 text-center text-xs text-muted-foreground">
-        <p className="m-0 leading-tight">
-          &copy; {new Date().getFullYear()} Kingdom Kids Secret Place. All rights reserved.
-        </p>
-      </footer>
-    </div>
+          
+          {/* Sidebar - Contact Form and Info */}
+          <div>
+            <Card className="border-0 shadow-md mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Mail className="h-5 w-5 mr-2 text-primary" />
+                  Contact Us
+                </CardTitle>
+                <CardDescription>
+                  Have a question? Get in touch with our support team
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      Your Name
+                    </label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium">
+                      Email Address
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="message" className="text-sm font-medium">
+                      Message
+                    </label>
+                    <Textarea
+                      id="message"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="How can we help you?"
+                      rows={4}
+                      required
+                    />
+                  </div>
+                  
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      "Send Message"
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-0 shadow-md">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Phone className="h-5 w-5 mr-2 text-primary" />
+                  Other Ways to Reach Us
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <Phone className="h-5 w-5 text-primary mt-0.5 mr-3" />
+                    <div>
+                      <h3 className="font-medium">Phone Support</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        (555) 123-4567
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Monday - Friday, 9 AM - 5 PM ET
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <Mail className="h-5 w-5 text-primary mt-0.5 mr-3" />
+                    <div>
+                      <h3 className="font-medium">Email Support</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        support@kingdomkids.com
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        We aim to respond within 24 hours
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <MessageSquare className="h-5 w-5 text-primary mt-0.5 mr-3" />
+                    <div>
+                      <h3 className="font-medium">Live Chat</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Available in the app
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Daily, 10 AM - 8 PM ET
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
-};
-
-export default Support;
+}
