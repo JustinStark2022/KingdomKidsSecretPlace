@@ -31,7 +31,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { insertUserSchema } from "@shared/schema";
+import { registerSchema } from "@/types/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -68,7 +68,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
 // Create schema for child account creation
-const childUserSchema = insertUserSchema.extend({
+const childUserSchema = registerSchema.extend({
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords do not match",
@@ -97,18 +97,35 @@ export default function ChildAccounts() {
   });
 
   // Fetch children data
-  const { data: children = [], isLoading: isLoadingChildren } = useQuery({
+  const { data: children = [], isLoading: isLoadingChildren } = useQuery<Child[]>({
     queryKey: ["/api/users/children"],
   });
+
+  type Child = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
 
   // Handle form submission
   function onSubmit(data: ChildFormValues) {
     const { confirmPassword, ...childData } = data;
+  
+    // Make sure required values like parentId are included before sending
+    if (!childData.parentId) {
+      console.error("Missing parentId for child account.");
+      return;
+    }
+  
     createChildMutation.mutate(childData, {
       onSuccess: () => {
         setIsOpen(false);
-        form.reset();
-      }
+        form.reset(); // Clear the form
+      },
+      onError: (error) => {
+        console.error("Failed to create child account:", error.message);
+      },
     });
   }
 
@@ -391,7 +408,7 @@ export default function ChildAccounts() {
               ))}
               
               {/* Add Child Card */}
-              <Card className="border-0 shadow-md border-dashed border-2 border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center p-6">
+              <Card className="shadow-md border-dashed border-2 border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center p-6">
                 <CardContent className="p-6 text-center flex flex-col items-center justify-center h-full">
                   <UserPlus className="h-12 w-12 text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">

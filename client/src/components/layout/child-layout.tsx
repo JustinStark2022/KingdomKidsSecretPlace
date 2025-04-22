@@ -81,7 +81,7 @@ export default function ChildLayout({ children, title }: ChildLayoutProps) {
                 />
               </div>
               <div>
-                <div className="font-medium">{user?.firstName}</div>
+                <div className="font-medium">{user?.username || "Guest"}</div>
                 <div className="text-xs text-accent-500">Super Bible Explorer!</div>
               </div>
             </div>

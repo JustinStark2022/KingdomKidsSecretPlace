@@ -1,22 +1,13 @@
-// node_backend/drizzle.config.ts
-import { defineConfig } from "drizzle-kit";
-import * as dotenv from "dotenv";
+// drizzle.config.ts
+import 'dotenv/config';
+import drizzleKit from 'drizzle-kit';
 
-dotenv.config();
 
-if (!process.env.PGHOST || !process.env.PGUSER || !process.env.PGPASSWORD || !process.env.PGDATABASE) {
-  throw new Error("❌ One or more required PG environment variables are missing.");
-}
 
-export default defineConfig({
-  schema: "./shared/schema.ts",
+export default {
+  schema: "./src/db/schema.ts",
   out: "./migrations",
   dialect: "postgresql",
-  dbCredentials: {
-    host: process.env.PGHOST,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-    ssl: "require",
-  },
-});
+  driver: "pglite",
+  dbCredentials: { url: process.env.DATABASE_URL! },
+};

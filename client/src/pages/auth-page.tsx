@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { insertUserSchema } from "@shared/schema";
+ // Ensure this is a Zod schema, not just a type, or replace with a valid schema
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,7 +27,12 @@ const loginSchema = z.object({
 });
 
 // Registration schema based on insertUserSchema with password confirmation
-const registerSchema = insertUserSchema.extend({
+const registerSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+}).extend({
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
   terms: z.boolean().refine(val => val === true, {
     message: "You must agree to the terms and conditions",

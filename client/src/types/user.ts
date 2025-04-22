@@ -1,10 +1,10 @@
 export interface User {
   id: number;
   username: string;
-  role: "parent" | "child";
-  displayName?: string;
-  email?: string; // ✅ Add this line
-  isParent?: boolean;
+  email: string;
+  password: string; 
+  display_name: string;
+  role: 'parent' | 'child';
   parentId?: number | null;
   createdAt?: string;
 }
