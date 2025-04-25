@@ -10,7 +10,13 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:5000",
         changeOrigin: true,
-        secure: false, // only necessary if using self-signed cert
+        secure: false,
+        ws: true, // for future-proofing in case you use WebSockets
+        configure: (proxy, _options) => {
+          proxy.on("proxyReq", (proxyReq) => {
+            proxyReq.setHeader("Origin", "http://localhost:5173");
+          });
+        },
       },
     },
   },

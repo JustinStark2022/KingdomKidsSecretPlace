@@ -5,35 +5,43 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
-export const getUser = async (req: Request & { user?: any }, res: Response) => {
-  const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: number;
+    role: string;
+  };
+}
 
-  const result = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+export const getUser = async (req: AuthenticatedRequest, res: Response) => {
+  const user_id = req.user?.id;
+  if (!user_id) return res.status(401).json({ message: "Unauthorized" });
+
+  const result = await db.select().from(users).where(eq(users.id, user_id)).limit(1);
   if (!result.length) return res.status(404).json({ message: "User not found" });
 
   const { password, ...safeUser } = result[0];
   res.json(safeUser);
 };
 
-export const getChildren = async (req: Request & { user?: any }, res: Response) => {
-  const parentId = req.user?.id;
-  const result = await db.select().from(users).where(eq(users.parentId, parentId));
+export const getChildren = async (req: AuthenticatedRequest, res: Response) => {
+  const parent_id = req.user?.id;
+  const result = await db.select().from(users).where(eq(users.parent_id, parent_id));
   res.json(result);
 };
 
-export const createChild = async (req: Request & { user?: any }, res: Response) => {
+export const createChild = async (req: AuthenticatedRequest, res: Response) => {
   const {
     username,
     password,
     email,
     display_name,
     role,
-    firstName,
-    lastName
+    first_name,
+    last_name
   } = req.body;
 
-  if (!username || !password || !display_name || !role || !firstName || !lastName) {
+  const parent_id = req.user?.id;
+  if (!parent_id || !username || !password || !display_name || !role || !first_name || !last_name) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
@@ -47,11 +55,15 @@ export const createChild = async (req: Request & { user?: any }, res: Response) 
       email,
       display_name,
       role,
-      parentId: req.user.id,
-      firstName,
-      lastName
+      parent_id,
+      first_name,
+      last_name
     })
     .returning();
+
+  if (!Array.isArray(newUser) || newUser.length === 0) {
+    return res.status(500).json({ message: "Failed to create user" });
+  }
 
   res.status(201).json(newUser[0]);
 };

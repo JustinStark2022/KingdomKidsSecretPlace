@@ -13,16 +13,14 @@ import ContentMonitoring from "@/pages/content-monitoring";
 import ScreenTime from "@/pages/screen-time";
 import LocationTracking from "@/pages/location-tracking";
 import ChildAccounts from "@/pages/child-accounts";
-import { ProtectedRoute } from "./lib/protected-route";
+import { ProtectedRoute }  from "@/lib/protected-route";
 import { useAuth } from "@/hooks/use-auth";
 
 function Router() {
   const { user } = useAuth();
-  
-  // User is authenticated, render dashboard based on role
+
   return (
     <Switch>
-      {/* Auth route - redirects to dashboard if already logged in */}
       <Route path="/auth">
         {user ? (
           user.role === "parent" ? <Redirect to="/dashboard" /> : <Redirect to="/child-dashboard" />
@@ -30,25 +28,21 @@ function Router() {
           <AuthPage />
         )}
       </Route>
-      
-      {/* Parent Routes */}
+
       <ProtectedRoute path="/" component={() => <Redirect to="/dashboard" />} />
-      <ProtectedRoute path="/dashboard" component={ParentDashboard} requireParent={true} />
-      <ProtectedRoute path="/children" component={ChildAccounts} requireParent={true} />
-      <ProtectedRoute path="/screentime" component={ScreenTime} requireParent={true} />
-      <ProtectedRoute path="/monitoring" component={ContentMonitoring} requireParent={true} />
-      <ProtectedRoute path="/location" component={LocationTracking} requireParent={true} />
-      <ProtectedRoute path="/settings" component={Settings} requireParent={true} />
-      
-      {/* Shared Routes */}
+      <ProtectedRoute path="/dashboard" component={ParentDashboard} requireParent />
+      <ProtectedRoute path="/children" component={ChildAccounts} requireParent />
+      <ProtectedRoute path="/screentime" component={ScreenTime} requireParent />
+      <ProtectedRoute path="/monitoring" component={ContentMonitoring} requireParent />
+      <ProtectedRoute path="/location" component={LocationTracking} requireParent />
+      <ProtectedRoute path="/settings" component={Settings} requireParent />
+
       <ProtectedRoute path="/bible" component={BibleReader} />
       <ProtectedRoute path="/lessons" component={Lessons} />
       <ProtectedRoute path="/support" component={Support} />
-      
-      {/* Child Routes */}
+
       <ProtectedRoute path="/child-dashboard" component={ChildDashboard} />
-      
-      {/* Fallback to 404 */}
+
       <Route component={NotFound} />
     </Switch>
   );

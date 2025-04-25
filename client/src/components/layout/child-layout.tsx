@@ -23,7 +23,7 @@ interface ChildLayoutProps {
 
 export default function ChildLayout({ children, title }: ChildLayoutProps) {
   const [location] = useLocation();
-  const { user, logoutMutation } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
@@ -35,7 +35,7 @@ export default function ChildLayout({ children, title }: ChildLayoutProps) {
   };
 
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logout();
   };
   
   // Navigation items
@@ -111,7 +111,6 @@ export default function ChildLayout({ children, title }: ChildLayoutProps) {
               className="w-full justify-center rounded-xl py-6 text-base"
               variant="outline"
               onClick={handleLogout}
-              disabled={logoutMutation.isPending}
             >
               <LogOut className="mr-3 h-5 w-5" />
               Sign Out

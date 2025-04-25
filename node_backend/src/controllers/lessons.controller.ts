@@ -1,7 +1,7 @@
 // src/controllers/lessons.controller.ts
 import { Request, Response } from "express";
 import { db } from "@/db/db";
-import { lessons, lessonProgress } from "@/db/schema";
+import { lessons, lesson_progress } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export const getBibleLessons = async (_req: Request, res: Response) => {
@@ -12,17 +12,17 @@ export const getBibleLessons = async (_req: Request, res: Response) => {
 export const getUserLessonProgress = async (req: Request & { user?: any }, res: Response) => {
   const result = await db
     .select()
-    .from(lessonProgress)
-    .where(eq(lessonProgress.userId, req.user.id));
+    .from(lesson_progress)
+    .where(eq(lesson_progress.user_id, req.user.id));
   res.json(result);
 };
 
 export const updateLessonProgress = async (req: Request & { user?: any }, res: Response) => {
   const { lessonId, completed } = req.body;
 
-  await db.insert(lessonProgress).values({
-    userId: req.user.id,
-    lessonId,
+  await db.insert(lesson_progress).values({
+    user_id: req.user.id,
+    lesson_id: lessonId,
     completed,
   });
 

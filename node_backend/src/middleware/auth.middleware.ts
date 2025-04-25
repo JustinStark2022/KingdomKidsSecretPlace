@@ -2,20 +2,15 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken as decodeJWT } from "@/utils/token";
 
-export function verifyToken(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
+export function verifyToken(req: Request, res: Response, next: NextFunction) {
+  const token = req.cookies.token; // ✅ Read from cookies
+
+  if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  const token = authHeader.split(" ")[1];
   try {
     const user = decodeJWT(token);
-    // attach to req.user for downstream controllers
     (req as any).user = user;
     next();
   } catch {

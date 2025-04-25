@@ -4,14 +4,15 @@ import {
   loginUser,
   logoutUser,
 } from "@/controllers/auth.controller";
+import { verifyToken } from "@/middleware/auth.middleware"; // optional: protect logout
 
 const router = Router();
 
-// public
+// Public routes
 router.post("/register", registerUser);
-router.post("/login",    loginUser);
+router.post("/login", loginUser);
 
-// protected
-router.post("/logout",   logoutUser);
+// Protected routes
+router.post("/logout", verifyToken, logoutUser); // 🛡️ optional middleware
 
 export default router;

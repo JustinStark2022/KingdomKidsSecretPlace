@@ -28,7 +28,7 @@ interface ParentLayoutProps {
 
 export default function ParentLayout({ children, title }: ParentLayoutProps) {
   const [location] = useLocation();
-  const { user, logoutMutation } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
@@ -40,7 +40,7 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
   };
 
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logout();
   };
   
   // Navigation items
@@ -91,7 +91,7 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
                 />
               </div>
               <div>
-                <div className="font-medium text-sm">{user?.firstName} {user?.lastName}</div>
+                <div className="font-medium text-sm">{user?.first_name} {user?.last_name}</div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">Parent Account</div>
               </div>
             </div>
@@ -121,7 +121,6 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
               variant="ghost"
               className="w-full justify-start"
               onClick={handleLogout}
-              disabled={logoutMutation.isPending}
             >
               <LogOut className="mr-3 h-5 w-5" />
               Logout

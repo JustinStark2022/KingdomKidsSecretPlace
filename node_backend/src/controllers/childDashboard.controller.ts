@@ -1,7 +1,7 @@
 // src/controllers/childDashboard.controller.ts
 import { Request, Response } from "express";
 import { db } from "@/db/db";
-import { screenTime as screenTimeTable, lessonProgress as lpTable } from "@/db/schema";
+import { screen_time as screenTimeTable, lesson_progress as lpTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export const getChildDashboardData = async (
@@ -14,16 +14,16 @@ export const getChildDashboardData = async (
   }
 
   // fetch today's screen time record
-  const [screenTime] = await db
+  const [screen_time] = await db
     .select()
     .from(screenTimeTable)
-    .where(eq(screenTimeTable.userId, userId));
+    .where(eq(screenTimeTable.user_id, userId));
 
   // fetch this user's lesson progress
-  const lessonProgress = await db
+  const lesson_progress = await db
     .select()
     .from(lpTable)
-    .where(eq(lpTable.userId, userId));
+    .where(eq(lpTable.user_id, userId));
 
-  return res.json({ screenTime, lessonProgress });
+  return res.json({ screen_time, lesson_progress });
 };

@@ -1,7 +1,7 @@
 // src/routes/user.routes.ts
 import { Router } from "express";
-import { getUser, getChildren, createChild } from "../controllers/user.controller.js";
-import { verifyToken } from "../middleware/auth.middleware.js";
+import { getUser, getChildren, createChild } from "../controllers/user.controller";
+import { verifyToken } from "../middleware/auth.middleware";
 
 const router = Router();
 
