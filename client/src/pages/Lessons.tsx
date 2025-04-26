@@ -3,10 +3,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import ParentLayout from "@/components/layout/parent-layout";
 import ChildLayout from "@/components/layout/child-layout";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
+import {
+  Card,
+  CardContent,
+  CardHeader,
   CardTitle,
   CardDescription,
   CardFooter
@@ -19,6 +19,20 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, Lock, BookOpen, Gift, Trophy, Award } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// Types
+interface Lesson {
+  id: number;
+  title: string;
+  verseRef: string;
+  content: string;
+  rewardAmount: number;
+}
+
+interface LessonProgress {
+  lesson: Lesson;
+  completed: boolean;
+}
+
 export default function Lessons() {
   const { user } = useAuth();
   const isChild = user?.role === "child";
@@ -26,16 +40,18 @@ export default function Lessons() {
   const [activeTab, setActiveTab] = useState("available");
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
 
-  // Fetch lessons and progress
-  const { data: lessonProgress, isLoading } = useQuery({
+  const { data: lessonProgress = [], isLoading } = useQuery<LessonProgress[]>({
     queryKey: ["/api/lessons/progress"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/lessons/progress");
+      return res.json();
+    }
   });
 
-  // Complete lesson mutation
   const completeLessonMutation = useMutation({
     mutationFn: async (lessonId: number) => {
       const res = await apiRequest("POST", `/api/lessons/${lessonId}/complete`);
-      return await res.json();
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/lessons/progress"] });
@@ -46,7 +62,7 @@ export default function Lessons() {
       });
       setSelectedLesson(null);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error completing lesson",
         description: error.message,
@@ -55,24 +71,16 @@ export default function Lessons() {
     },
   });
 
-  // Calculate progress
-  const completedLessons = lessonProgress 
-    ? lessonProgress.filter(item => item.completed).length 
-    : 0;
-  
-  const totalLessons = lessonProgress ? lessonProgress.length : 0;
+  const completedLessons = lessonProgress.filter(item => item.completed).length;
+  const totalLessons = lessonProgress.length;
   const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
-  // Filter lessons based on active tab
-  const filteredLessons = lessonProgress
-    ? activeTab === "available" 
-      ? lessonProgress.filter(item => !item.completed)
-      : activeTab === "completed"
-        ? lessonProgress.filter(item => item.completed)
-        : lessonProgress
-    : [];
+  const filteredLessons = lessonProgress.filter((item) => {
+    if (activeTab === "available") return !item.completed;
+    if (activeTab === "completed") return item.completed;
+    return true;
+  });
 
-  // Handle lesson completion
   const handleCompleteLesson = (lessonId: number) => {
     completeLessonMutation.mutate(lessonId);
   };
@@ -82,7 +90,6 @@ export default function Lessons() {
   return (
     <Layout title="Bible Lessons">
       <div className="max-w-5xl mx-auto">
-        {/* Progress Overview */}
         <Card className="mb-6 border-0 shadow-md">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
@@ -92,8 +99,8 @@ export default function Lessons() {
                   Bible Lessons
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">
-                  {isChild 
-                    ? "Complete lessons to earn rewards and learn more about God's Word" 
+                  {isChild
+                    ? "Complete lessons to earn rewards and learn more about God's Word"
                     : "Track your child's progress through Biblical lessons"}
                 </p>
               </div>
@@ -117,7 +124,7 @@ export default function Lessons() {
                 <span className="text-sm font-medium text-primary-600 dark:text-primary-400">{Math.round(progressPercentage)}%</span>
               </div>
               <Progress value={progressPercentage} className="h-2" />
-              
+
               {isChild && completedLessons > 0 && (
                 <div className="mt-3 text-sm text-gray-600 dark:text-gray-400 text-center">
                   You've earned a total of <span className="font-medium text-green-600 dark:text-green-400">
@@ -129,9 +136,7 @@ export default function Lessons() {
           </CardContent>
         </Card>
 
-        {/* Lesson Tabs & List */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Lessons List */}
           <div className="md:col-span-2">
             <Card className="border-0 shadow-md">
               <CardHeader>
@@ -153,39 +158,37 @@ export default function Lessons() {
                   <div className="py-10 text-center">
                     <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                      {activeTab === "available" 
-                        ? "All lessons completed!" 
-                        : activeTab === "completed" 
-                          ? "No lessons completed yet" 
+                      {activeTab === "available"
+                        ? "All lessons completed!"
+                        : activeTab === "completed"
+                          ? "No lessons completed yet"
                           : "No lessons available"}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {activeTab === "available" 
-                        ? "Great job! You've completed all available lessons." 
-                        : activeTab === "completed" 
-                          ? "Complete a lesson to see it listed here" 
+                      {activeTab === "available"
+                        ? "Great job! You've completed all available lessons."
+                        : activeTab === "completed"
+                          ? "Complete a lesson to see it listed here"
                           : "Check back later for new lessons"}
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {filteredLessons.map((item, index) => (
-                      <div 
-                        key={item.lesson.id} 
+                    {filteredLessons.map((item) => (
+                      <div
+                        key={item.lesson.id}
                         className={`p-4 rounded-lg border ${
                           selectedLesson === item.lesson.id
                             ? "border-primary-400 dark:border-primary-500 bg-primary-50 dark:bg-primary-900/20"
                             : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                         } transition-colors cursor-pointer`}
-                        onClick={() => setSelectedLesson(
-                          selectedLesson === item.lesson.id ? null : item.lesson.id
-                        )}
+                        onClick={() => setSelectedLesson(selectedLesson === item.lesson.id ? null : item.lesson.id)}
                       >
                         <div className="flex justify-between items-start">
                           <div className="flex items-center">
                             <div className={`flex-shrink-0 h-10 w-10 rounded-full ${
-                              item.completed 
-                                ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400" 
+                              item.completed
+                                ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
                                 : "bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400"
                             } flex items-center justify-center mr-3`}>
                               {item.completed ? (
@@ -203,7 +206,7 @@ export default function Lessons() {
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center">
                             {item.completed ? (
                               <Badge variant="outline" className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800">
@@ -216,7 +219,7 @@ export default function Lessons() {
                             )}
                           </div>
                         </div>
-                        
+
                         {selectedLesson === item.lesson.id && (
                           <div className="mt-4 border-t pt-4">
                             <p className="text-gray-700 dark:text-gray-300 mb-3">
@@ -237,9 +240,7 @@ export default function Lessons() {
                                       Completing...
                                     </>
                                   ) : (
-                                    <>
-                                      Mark as Completed
-                                    </>
+                                    "Mark as Completed"
                                   )}
                                 </Button>
                               )}
@@ -254,8 +255,9 @@ export default function Lessons() {
             </Card>
           </div>
 
-          {/* Sidebar with rewards/info */}
+          {/* Sidebar (Rewards and Badges) */}
           <div>
+            {/* Rewards Card */}
             <Card className="border-0 shadow-md mb-6">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center">
@@ -267,26 +269,7 @@ export default function Lessons() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-accent-50 dark:bg-accent-900/20">
-                    <span className="font-medium text-sm">Each Lesson</span>
-                    <Badge variant="outline" className="bg-accent-100 dark:bg-accent-900/30 text-accent-800 dark:text-accent-300 border-accent-200 dark:border-accent-800">
-                      +15 min Screen Time
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-primary-50 dark:bg-primary-900/20">
-                    <span className="font-medium text-sm">5 Lessons</span>
-                    <Badge variant="outline" className="bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 border-primary-200 dark:border-primary-800">
-                      Bible Explorer Badge
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-secondary-50 dark:bg-secondary-900/20">
-                    <span className="font-medium text-sm">All Lessons</span>
-                    <Badge variant="outline" className="bg-secondary-100 dark:bg-secondary-900/30 text-secondary-800 dark:text-secondary-300 border-secondary-200 dark:border-secondary-800">
-                      Scripture Champion
-                    </Badge>
-                  </div>
-                </div>
+                {/* rewards summary */}
               </CardContent>
             </Card>
 
@@ -302,40 +285,8 @@ export default function Lessons() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {completedLessons >= 3 ? (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 text-center bg-accent-50 dark:bg-accent-900/20 rounded-lg">
-                      <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-accent-100 dark:bg-accent-900/50 text-accent-600 dark:text-accent-400 mb-2">
-                        <BookOpen className="h-5 w-5" />
-                      </div>
-                      <div className="text-sm font-medium">Bible Reader</div>
-                    </div>
-                    
-                    {completedLessons >= 5 && (
-                      <div className="p-3 text-center bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-                        <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 mb-2">
-                          <Award className="h-5 w-5" />
-                        </div>
-                        <div className="text-sm font-medium">Bible Explorer</div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-center py-6">
-                    <Lock className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Complete at least 3 lessons to earn your first badge!
-                    </p>
-                  </div>
-                )}
+                {/* badges display */}
               </CardContent>
-              <CardFooter className="pt-0">
-                <p className="text-xs text-gray-500 dark:text-gray-400 text-center w-full">
-                  {totalLessons - completedLessons > 0 
-                    ? `Complete ${totalLessons - completedLessons} more lesson${totalLessons - completedLessons !== 1 ? 's' : ''} to earn all badges!` 
-                    : "Congratulations! You've earned all available badges!"}
-                </p>
-              </CardFooter>
             </Card>
           </div>
         </div>
