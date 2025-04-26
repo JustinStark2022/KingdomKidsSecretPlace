@@ -18,5 +18,17 @@
     "typescriptreact": "html"
   },
 
+  "tailwindCSS.experimental.configFile": "./tailwind.config.ts",
+  
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+
+  "tailwindCSS.emmetCompletions": true,
+
   "prettier.ignorePath": ".prettierignore"
 }
