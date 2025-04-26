@@ -3,11 +3,38 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply border-border;
+  :root {
+    --brand-blue: #0074c7;
+    --brand-yellow: #ffdc0e;
+    --brand-white: #fff;
+    --card: #fff;
+    --card-foreground: #0f172a; /* Dark text on light card */
+    --background: var(--brand-blue);
+    --foreground: var(--brand-white);
+    --primary: var(--brand-blue);
+    --primary-foreground: var(--brand-white);
+    --accent: var(--brand-yellow);
+    --accent-foreground: var(--brand-blue);
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans bg-[color:var(--background)] text-[color:var(--foreground)] min-h-screen;
   }
+
+  .card {
+    @apply bg-[color:var(--card)] text-[color:var(--card-foreground)] rounded-lg shadow-xl p-6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-[color:var(--foreground)];
+  }
+
+  button {
+    @apply rounded-md font-medium transition duration-300 bg-[color:var(--primary)] text-[color:var(--primary-foreground)] hover:bg-blue-800;
+  }
+
+  input {
+    @apply bg-blue-50 border border-blue-200 text-blue-900 placeholder-blue-300 focus:ring-blue-500 focus:border-blue-500 rounded px-3 py-2 w-full;
+  }
+  
 }

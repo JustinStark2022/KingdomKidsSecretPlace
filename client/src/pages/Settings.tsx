@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import ParentLayout from "@/components/layout/parent-layout";
 import { 
   Card,
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle
+  CardContent
 } from "@/components/ui/card";
 import {
   Tabs,
@@ -27,7 +23,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { fetchChildren } from "@/api/children";
+import { Child } from "@/types/user";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Settings as SettingsIcon, 
@@ -38,7 +35,8 @@ import {
   Lock, 
   BookOpen, 
   Smile,
-  Loader2
+  Loader2,
+  Gift
 } from "lucide-react";
 
 export default function Settings() {
@@ -46,12 +44,11 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState("general");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch children data
-  const { data: children = [] } = useQuery({
+  const { data: children = [] } = useQuery<Child[]>({
     queryKey: ["/api/users/children"],
+    queryFn: fetchChildren,
   });
 
-  // Form states
   const [selectedChild, setSelectedChild] = useState<string>("all");
   const [notifications, setNotifications] = useState({
     contentAlerts: true,
@@ -69,19 +66,17 @@ export default function Settings() {
     blockBlasphemy: true
   });
   const [screenTimeSettings, setScreenTimeSettings] = useState({
-    weekdayLimit: 120, // minutes
-    weekendLimit: 180, // minutes
+    weekdayLimit: 120,
+    weekendLimit: 180,
     lockafter9pm: true,
     pauseDuringBedtime: true,
     allowRewards: true,
-    maxRewardTime: 60 // minutes
+    maxRewardTime: 60
   });
 
-  // Save general settings
   const saveGeneralSettings = async () => {
     setIsSubmitting(true);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast({
         title: "Settings saved",
@@ -98,11 +93,9 @@ export default function Settings() {
     }
   };
 
-  // Save content filter settings
   const saveContentFilters = async () => {
     setIsSubmitting(true);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast({
         title: "Content filters updated",
@@ -119,11 +112,9 @@ export default function Settings() {
     }
   };
 
-  // Save screen time settings
   const saveScreenTimeSettings = async () => {
     setIsSubmitting(true);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast({
         title: "Screen time settings updated",
@@ -156,8 +147,8 @@ export default function Settings() {
                 <TabsTrigger value="content">Content Filters</TabsTrigger>
                 <TabsTrigger value="screentime">Screen Time</TabsTrigger>
               </TabsList>
-              
-              {/* General Settings Tab */}
+
+              {/* General Tab */}
               <TabsContent value="general">
                 <div className="space-y-6">
                   <div>
@@ -315,30 +306,27 @@ export default function Settings() {
                   </Button>
                 </div>
               </TabsContent>
-              
+
               {/* Content Filters Tab */}
               <TabsContent value="content">
                 <div className="space-y-6">
                   <div className="mb-6">
                     <Label htmlFor="child-selector" className="text-base font-medium">Apply Settings To:</Label>
-                    <Select 
-                      value={selectedChild} 
-                      onValueChange={setSelectedChild}
-                    >
+                    <Select value={selectedChild} onValueChange={setSelectedChild}>
                       <SelectTrigger id="child-selector" className="mt-2">
                         <SelectValue placeholder="Select child" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Children</SelectItem>
                         {children.map((child) => (
-                          <SelectItem key={child.id} value={child.firstName}>
-                            {child.firstName} {child.lastName}
+                          <SelectItem key={child.id} value={child.first_name}>
+                            {child.first_name} {child.last_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-lg font-medium flex items-center mb-4">
                       <Shield className="h-5 w-5 mr-2 text-red-500" />
@@ -475,7 +463,7 @@ export default function Settings() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <Button 
                     onClick={saveContentFilters} 
                     className="w-full" 
@@ -492,30 +480,28 @@ export default function Settings() {
                   </Button>
                 </div>
               </TabsContent>
-              
+
               {/* Screen Time Tab */}
               <TabsContent value="screentime">
                 <div className="space-y-6">
+                  {/* Apply Settings To */}
                   <div className="mb-6">
                     <Label htmlFor="child-time-selector" className="text-base font-medium">Apply Settings To:</Label>
-                    <Select 
-                      value={selectedChild} 
-                      onValueChange={setSelectedChild}
-                    >
+                    <Select value={selectedChild} onValueChange={setSelectedChild}>
                       <SelectTrigger id="child-time-selector" className="mt-2">
                         <SelectValue placeholder="Select child" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Children</SelectItem>
                         {children.map((child) => (
-                          <SelectItem key={child.id} value={child.firstName}>
-                            {child.firstName} {child.lastName}
+                          <SelectItem key={child.id} value={child.first_name}>
+                            {child.first_name} {child.last_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-lg font-medium flex items-center mb-4">
                       <Clock className="h-5 w-5 mr-2 text-blue-500" />
@@ -628,7 +614,7 @@ export default function Settings() {
                       )}
                     </div>
                   </div>
-                  
+
                   <Button 
                     onClick={saveScreenTimeSettings} 
                     className="w-full" 
@@ -645,6 +631,7 @@ export default function Settings() {
                   </Button>
                 </div>
               </TabsContent>
+
             </Tabs>
           </CardContent>
         </Card>

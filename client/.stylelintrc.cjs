@@ -1,9 +1,21 @@
-export default {
-  extends: ["stylelint-config-standard",  "stylelint-config-tailwindcss"],
+// stylelintrc.cjs
+module.exports = {
+  extends: [
+    "stylelint-config-standard",
+    "stylelint-config-tailwindcss",
+    "stylelint-config-prettier"
+  ],
   plugins: [],
   rules: {
     "at-rule-no-unknown": [true, {
-      ignoreAtRules: ["tailwind", "apply", "variants", "responsive", "screen", "layer"]
+      ignoreAtRules: [
+        "tailwind",
+        "apply",
+        "variants",
+        "responsive",
+        "screen",
+        "layer"
+      ]
     }],
     "lightness-notation": null,
     "custom-property-empty-line-before": null,

@@ -1,48 +1,139 @@
 import React, { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useLocation } from "wouter";
 import { login } from "@/api/user";
+import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { useLocation } from "wouter";
+import Logo from "@/components/ui/logo";
 
-const AuthPage: React.FC = () => {
+export default function AuthPage() {
   const { setUser } = useAuth();
   const [, navigate] = useLocation();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+    display_name: "",
+    email: "",
+    first_name: "",
+    last_name: "",
+  });
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const user = await login(username, password);
-      setUser(user);
-      navigate(user.role === "parent" ? "/dashboard" : "/child-dashboard");
-    } catch (err: any) {
-      setError(err.message || "Login failed");
+    setError("");
+
+    if (mode === "login") {
+      try {
+        const user = await login(form.username, form.password);
+        setUser(user);
+        navigate(user.role === "parent" ? "/dashboard" : "/child-dashboard");
+      } catch (err: any) {
+        setError(err.message || "Login failed");
+      }
+    } else {
+      try {
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ ...form, role: "parent" }),
+        });
+
+        if (!response.ok) throw new Error("Registration failed");
+        const user = await response.json();
+        setUser(user);
+        navigate("/dashboard");
+      } catch (err: any) {
+        setError(err.message || "Registration failed");
+      }
     }
   };
 
   return (
-    <Card className="max-w-md mx-auto mt-16">
-      <CardContent className="p-6">
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <Label>Username</Label>
-            <Input value={username} onChange={(e) => setUsername(e.target.value)} />
+    <div className="min-h-screen flex items-center justify-center  bg-gray-50 dark:bg-gray-900 px-4">
+      <Card className="w-full max-w-md  shadow-xl">
+        <CardContent className="p-6 space-y-6">
+          <div className="text-center">
+          <Logo />
+            <h1 className="text-2xl font-bold text-center">Kingdom Kids Secret Place</h1>
+            <p className="text-gray-500 text-sm">
+              Protecting children online while promoting spiritual growth
+            </p>
           </div>
-          <div className="mb-4">
-            <Label>Password</Label>
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-          <Button type="submit" className="w-full">Login</Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-};
 
-export default AuthPage;
+          <div className="flex bg-muted rounded overflow-hidden mt-4">
+            <button
+              className={`flex-1 mr-4  px-4 py-2 text-sm text-white font-medium ${
+                mode === "login" ? "bg-white shadow" : "bg-muted"
+              }`}
+              onClick={() => setMode("login")}
+            >
+              Login
+            </button>
+            <button
+              className={`flex-1 px-4 py-2  bg-primary text-sm text-white  font-medium ${
+                mode === "register" ? "bg-white shadow" : "bg-muted"
+              }`}
+              onClick={() => setMode("register")}
+            >
+              Register
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4 bg-primary">
+            {mode === "register" && (
+              <>
+                <div>
+                  <Label htmlFor="first_name">First Name</Label>
+                  <Input name="first_name" value={form.first_name} onChange={handleChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="last_name">Last Name</Label>
+                  <Input name="last_name" value={form.last_name} onChange={handleChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="display_name">Display Name</Label>
+                  <Input name="display_name" value={form.display_name} onChange={handleChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input type="email" name="email" value={form.email} onChange={handleChange} required />
+                </div>
+              </>
+            )}
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input name="username" value={form.username} onChange={handleChange} required />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <div className="text-right text-sm text-blue-600 hover:underline cursor-pointer">
+              Forgot password?
+            </div>
+            <Button type="submit" className="w-full ">
+              {mode === "login" ? "Sign in" : "Create Account"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
