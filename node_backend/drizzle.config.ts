@@ -1,13 +1,13 @@
 // drizzle.config.ts
 import 'dotenv/config';
-import drizzleKit from 'drizzle-kit';
 
-
-
-export default {
+const config = {
   schema: "./src/db/schema.ts",
   out: "./migrations",
-  dialect: "postgresql",
-  driver: "pglite",
-  dbCredentials: { url: process.env.DATABASE_URL! },
+  driver: "pg", // <-- Corrected: drizzle-kit expects 'driver', NOT 'dialect'
+  dbCredentials: {
+    url: process.env.DATABASE_URL || "", // <-- Fixed typing issue safely
+  },
 };
+
+export default config;
