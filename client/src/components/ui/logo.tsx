@@ -2,15 +2,13 @@ import React from "react";
 
 const Logo: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center text-center">
+    <div className="flex flex-col items-center  justify-center text-center">
       <img
-        src="/images/kingdomkidslogo.png"
+        src="/images/kingdom-kids-logo-v1.png"
         alt="Kingdom Kids Secret Place Logo"
-        className="h-20 w-20 object-contain mb-2"
+        className="h-30 w-64 mb-2"
       />
-      <h1 className="text-2xl font-extrabold text-[#ffffff] bg-[#0072ce] px-2 py-1 rounded">
-        Kingdom Kids Secret Place
-      </h1>
+      
     </div>
   );
 };
