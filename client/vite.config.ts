@@ -2,32 +2,54 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { loadEnv } from 'vite';
 
-export default defineConfig({
-  server: {
-    port: 5173,
-    proxy: {
-      "/api": {
-        target: "http://localhost:5000",
-        changeOrigin: true,
-        secure: false,
-        ws: true, // for future-proofing in case you use WebSockets
-        configure: (proxy, _options) => {
-          proxy.on("proxyReq", (proxyReq) => {
-            proxyReq.setHeader("Origin", "http://localhost:5173");
-          });
+export default defineConfig(({ mode }) => {
+  // Load env file based on `mode` in the current directory.
+  const env = loadEnv(mode, process.cwd(), '');
+  
+  return {
+    server: {
+      port: parseInt(env.PORT || '5173'),
+      strictPort: true,
+      proxy: {
+        "/api": {
+          target: env.VITE_API_URL || "http://localhost:5000",
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+          configure: (proxy, _options) => {
+            proxy.on("error", (err, _req, _res) => {
+              console.log("proxy error", err);
+            });
+            proxy.on("proxyReq", (proxyReq) => {
+              proxyReq.setHeader("Origin", env.VITE_FRONTEND_URL || "http://localhost:5173");
+            });
+          },
         },
       },
     },
-  },
-  build: {
-    outDir: path.resolve(__dirname, "../node_backend/static"),
-    emptyOutDir: true,
-  },
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
+    build: {
+      outDir: path.resolve(__dirname, "../node_backend/static"),
+      emptyOutDir: true,
+      sourcemap: mode === 'development',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            ui: ['@radix-ui/react-*'],
+          },
+        },
+      },
     },
-  },
+    plugins: [react()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+      },
+    },
+    define: {
+      __APP_ENV__: JSON.stringify(env.APP_ENV),
+    },
+  };
 });

@@ -1,13 +1,30 @@
 // drizzle.config.ts
 import 'dotenv/config';
+import { z } from 'zod';
+
+// Validate database configuration
+const dbConfigSchema = z.object({
+  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+});
+
+try {
+  dbConfigSchema.parse(process.env);
+} catch (error) {
+  console.error("Database configuration validation failed:", error);
+  process.exit(1);
+}
 
 const config = {
   schema: "./src/db/schema.ts",
   out: "./migrations",
-  driver: "pg", // <-- Corrected: drizzle-kit expects 'driver', NOT 'dialect'
+  driver: "pg",
   dbCredentials: {
-    url: process.env.DATABASE_URL || "", // <-- Fixed typing issue safely
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   },
+  verbose: process.env.NODE_ENV === "development",
+  strict: true,
 };
 
 export default config;

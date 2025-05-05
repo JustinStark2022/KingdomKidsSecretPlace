@@ -2,53 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base Layer */
 @layer base {
   :root {
-    --brand-blue: #0074c7;
-    --brand-blue-light: #1188e6;
-    --brand-yellow: #ffdc0e;
-    --brand-white: #fff;
+    /* Brand Colors from theme.json */
+    --background: 210 60% 98%;
+    --foreground: 222 47% 11%;
+    --primary: 195 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 16% 47%;
+    --card: 210 60% 98%;
+    --card-foreground: 222 47% 11%;
+    --border: 210 20% 88%;
+    --accent: 210 60% 98%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 100% 66%;
+    --destructive-foreground: 0 0% 100%;
+  }
 
-    --background: #e5f4ff;
-    --foreground: #0f172a;
-
-    --primary: var(--brand-blue);
-    --primary-foreground: var(--brand-white);
-    --accent: var(--brand-yellow);
-    --accent-foreground: var(--brand-blue);
-    --card: #ffffff;
-    --card-foreground: #0f172a;
-
-    --card: #ffffff;
-    --card-foreground: #0f172a; /* Dark text on light card */
-
-
+  .dark {
+    --background: 240 5% 10%;
+    --foreground: 0 0% 95%;
+    --primary: 195 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 240 5% 26%;
+    --muted-foreground: 240 5% 65%;
+    --card: 240 5% 12%;
+    --card-foreground: 0 0% 95%;
+    --border: 240 5% 26%;
+    --accent: 240 5% 12%;
+    --accent-foreground: 0 0% 95%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
   }
 
   body {
-    @apply font-sans bg-[color:var(--background)] text-[color:var(--foreground)] min-h-screen;
+    @apply bg-background text-foreground font-sans;
   }
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply text-[color:var(--foreground)];
-  }
-
-  button {
-    @apply rounded-md font-medium transition duration-300;
-  }
-
-  .card {
-    @apply bg-[color:var(--card)] text-[color:var(--card-foreground)] rounded-lg shadow-xl p-6;
-  }
-
-  .tab-button[data-state="active"] {
-    background-color: var(--primary);
-    color: white;
-  }
-  
-  .tab-button {
-    color: var(--primary);
-  }
-  
-
+/* Custom font */
+html {
+  font-family: 'Poppins', sans-serif;
 }

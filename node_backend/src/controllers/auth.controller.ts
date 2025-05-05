@@ -1,36 +1,45 @@
 // src/controllers/auth.controller.ts
-import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import { db } from "@/db/db";
 import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import { generateToken } from "@/utils/token";
+
+import { Request, Response } from "express";
+
+import bcrypt from "bcrypt";
+
+import { eq } from "drizzle-orm";
+
 import { createInsertSchema } from "drizzle-zod";
+
 import { z } from "zod";
 
 // Zod-based type validation schema
 const newUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  username: z.string(),
-  display_name: z.string(),
-  role: z.string(),
+  username: z.string().min(3),
+  display_name: z.string().min(1),
+  role: z.enum(["parent", "child"]),
   parent_id: z.number().optional(),
-  first_name: z.string(),
-  last_name: z.string()
+  first_name: z.string().min(1),
+  last_name: z.string().min(1)
+});
+
+const loginSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(1)
 });
 
 const COOKIE_OPTS = {
   httpOnly: true,
   sameSite: "lax" as const,
-  secure: process.env.NODE_ENV === "production" ? true : false,
-  maxAge: 1000 * 60 * 60, // 1 hour
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 1000 * 60 * 60 * 24, // 24 hours
 };
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const parsed = newUserSchema.parse(req.body);
-
     const {
       username,
       password,
@@ -52,6 +61,16 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Username already taken." });
     }
 
+    // Check if email exists
+    const existingEmail = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
+
+    if (existingEmail.length > 0) {
+      return res.status(400).json({ message: "Email already registered." });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const inserted = await db
@@ -62,25 +81,12 @@ export const registerUser = async (req: Request, res: Response) => {
         email,
         display_name,
         role,
-        parent_id: parent_id ?? null,
+        parent_id: role === "child" ? parent_id : null,
         first_name,
         last_name,
       })
-      .returning({
-        id: users.id,
-        username: users.username,
-        email: users.email,
-        display_name: users.display_name,
-        role: users.role,
-        parent_id: users.parent_id,
-        first_name: users.first_name,
-        last_name: users.last_name,
-        created_at: users.created_at,
-        password: users.password
-      });
-
+      .returning() as Array<typeof users.$inferSelect>;
     const createdUser = inserted[0];
-
     const token = generateToken(createdUser.id, createdUser.role);
 
     res
@@ -88,49 +94,57 @@ export const registerUser = async (req: Request, res: Response) => {
       .status(201)
       .json({
         id: createdUser.id,
-        username: createdUser.username,
-        email: createdUser.email,
-        displayName: createdUser.display_name,
         role: createdUser.role,
-        parentId: createdUser.parent_id,
-        firstName: createdUser.first_name,
-        lastName: createdUser.last_name,
-        createdAt: createdUser.created_at,
         isParent: createdUser.role === "parent",
       });
   } catch (err: any) {
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: err.errors[0].message });
+    }
     return res.status(400).json({ message: err.message });
   }
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = loginSchema.parse(req.body);
 
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.username, username));
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: "Invalid credentials." });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid username or password." });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid username or password." });
+    }
+
+    const token = generateToken(user.id, user.role);
+
+    res
+      .cookie("token", token, COOKIE_OPTS)
+      .json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        displayName: user.display_name,
+        role: user.role,
+        parentId: user.parent_id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        createdAt: user.created_at,
+        isParent: user.role === "parent",
+      });
+  } catch (err: any) {
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: err.errors[0].message });
+    }
+    return res.status(400).json({ message: err.message });
   }
-
-  const token = generateToken(user.id, user.role);
-
-  res
-    .cookie("token", token, COOKIE_OPTS)
-    .json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      displayName: user.display_name,
-      role: user.role,
-      parentId: user.parent_id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      createdAt: user.created_at,
-      isParent: user.role === "parent",
-    });
 };
 
 export const logoutUser = (_req: Request, res: Response) => {
