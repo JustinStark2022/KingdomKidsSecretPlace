@@ -33,7 +33,7 @@ export const getScreenTimeData = async (_req: Request, res: Response) => {
 // New: get screen time for any user by ID
 export const getScreenTimeForUser = async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const userId = parseInt(req.query.userId as string);
     const [record] = await db
       .select()
       .from(screenTimeTable)
@@ -41,6 +41,22 @@ export const getScreenTimeForUser = async (req: Request, res: Response) => {
     res.json(record || null);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch screen time for user", error: err });
+  }
+};
+
+// New: update screen time limits for a user
+export const updateScreenTime = async (req: Request, res: Response) => {
+  try {
+    const { userId, allowedTimeMinutes } = req.body as { userId: number; allowedTimeMinutes: number };
+    const [updated] = await db
+      .update(screenTimeTable)
+      .set({ daily_limits_total: allowedTimeMinutes })
+      .where(eq(screenTimeTable.user_id, userId))
+      .returning();
+    if (!updated) return res.status(404).json({ message: "Screen time record not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update screen time", error: err });
   }
 };
 

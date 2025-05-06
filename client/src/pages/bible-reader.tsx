@@ -43,18 +43,20 @@ export default function BibleReader() {
     },
   });
 
-  // Only keep main versions
-  const mainVersions = ["NIrV", "NIV", "KJV", "NLT", "ESV"];
-  const filteredBibles = bibles.filter((b: any) => mainVersions.includes(b.abbreviation));
+  // Only keep the five main English versions (acronyms in uppercase)
+  const mainVersions = ["NIRV", "NIV", "KJV", "NLT", "ESV"];
+  const filteredBibles = mainVersions
+    .map(abbr => bibles.find((b: any) => b.abbreviation.toUpperCase() === abbr))
+    .filter(Boolean) as any[];
 
   // Set default to NIrV if available, else first, after bibles load
   useEffect(() => {
     if (!bibleId && filteredBibles.length > 0) {
-      const nirv = filteredBibles.find((b: any) => b.abbreviation === "NIrV");
+      const nirv = filteredBibles.find((b: any) => b.abbreviation.toUpperCase() === "NIRV");
       const defaultId = nirv ? nirv.id : filteredBibles[0].id;
       setBibleId(defaultId.toString());
     }
-  }, [bibles, bibleId]);
+  }, [filteredBibles, bibleId]);
 
   // Fetch books for selected Bible
   const { data: books = [], isLoading: loadingBooks } = useQuery({
@@ -165,7 +167,7 @@ export default function BibleReader() {
                     ) : (
                       filteredBibles.map((b: any) => (
                         <SelectItem key={b.id} value={b.id.toString()}>
-                          {b.abbreviation} - {b.name}
+                          {b.abbreviation.toUpperCase()}
                         </SelectItem>
                       ))
                     )}
@@ -182,9 +184,11 @@ export default function BibleReader() {
                     {loadingBooks ? (
                       <SelectItem value="loading" disabled>Loading...</SelectItem>
                     ) : (
-                      books.map((b: any) => (
-                        <SelectItem key={b.id} value={b.id.toString()}>
-                          {b.name}
+                      books.map((bk: any) => (
+                        <SelectItem key={bk.id} value={bk.id.toString()}>
+                          {bk.abbreviation
+                            ? bk.abbreviation.toUpperCase()
+                            : bk.name.slice(0,3).toUpperCase()}
                         </SelectItem>
                       ))
                     )}

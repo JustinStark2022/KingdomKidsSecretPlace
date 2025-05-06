@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { getScreenTimeData, getScreenTimeForUser } from "../controllers/screenTime.controller";
+import { getScreenTimeForUser, updateScreenTime } from "../controllers/screenTime.controller";
 import { verifyToken } from "@/middleware/auth.middleware";
 
 const router = Router();
 
-router.get("/screen-time", verifyToken, getScreenTimeData);
-router.get("/screen-time/:userId", verifyToken, getScreenTimeForUser);
+// GET /api/screentime?userId=...
+router.get("/", verifyToken, getScreenTimeForUser);
+
+// POST /api/screentime/update
+router.post("/update", verifyToken, updateScreenTime);
 
 export default router;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import ParentLayout from "@/components/layout/parent-layout";
 import {
@@ -40,6 +40,7 @@ import {
   GraduationCap
 } from "lucide-react";
 import { Child } from "@/types/user";
+import { fetchChildren } from "@/api/children";
 
 interface ScreenTimeData {
   allowedTimeMinutes: number;
@@ -55,16 +56,15 @@ export default function ScreenTime() {
   const [adjustmentAmount, setAdjustmentAmount] = useState(15);
 
   const { data: children = [] } = useQuery<Child[]>({
-    queryKey: ["/api/user/children"],
-    queryFn: async () => {
-      const res = await apiRequest("GET", "/api/user/children");
-      return res.json();
-    },
+    queryKey: ["children"],
+    queryFn: fetchChildren,
   });
 
-  if (!selectedChild && children.length > 0) {
-    setSelectedChild(children[0].id.toString());
-  }
+  useEffect(() => {
+    if (!selectedChild && children.length > 0) {
+      setSelectedChild(children[0].id.toString());
+    }
+  }, [children, selectedChild]);
 
   const { data: screenTime, isLoading: screenTimeLoading } = useQuery<ScreenTimeData>({
     queryKey: [`/api/screentime?userId=${selectedChild}&date=${selectedDate}`],
@@ -146,7 +146,7 @@ export default function ScreenTime() {
               <SelectContent>
                 {children.map((child) => (
                   <SelectItem key={child.id} value={child.id.toString()}>
-                    {child.first_name} {child.last_name}
+                    {child.username}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -202,9 +202,43 @@ export default function ScreenTime() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Cards */}
-            {/* Daily Overview, Adjustments, Rewards */}
-            {/* ... Would continue exactly like your original layout */}
+            {/* Usage Today Card */}
+            <Card className="border-0 shadow-md">
+              <CardHeader>
+                <CardTitle>Usage Today</CardTitle>
+                <CardDescription>
+                  {screenTime.usedTimeMinutes}m / {screenTime.allowedTimeMinutes + screenTime.additionalRewardMinutes}m
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Progress value={calculateTimeUsedPercentage()} className="h-2 rounded-full" />
+              </CardContent>
+            </Card>
+
+            {/* Quick Adjust Card */}
+            <Card className="border-0 shadow-md">
+              <CardHeader>
+                <CardTitle>Quick Adjust</CardTitle>
+              </CardHeader>
+              <CardContent className="flex space-x-2">
+                <Button onClick={() => adjustAllowedTime(-adjustmentAmount)} variant="outline">
+                  -{adjustmentAmount}m
+                </Button>
+                <Button onClick={() => adjustAllowedTime(adjustmentAmount)}>
+                  +{adjustmentAmount}m
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Rewards Card */}
+            <Card className="border-0 shadow-md">
+              <CardHeader>
+                <CardTitle>Rewards Earned</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-semibold">{screenTime.additionalRewardMinutes}m</p>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
