@@ -12,10 +12,15 @@ const headers = {
 
 export const getBibles = async (_req: Request, res: Response) => {
   try {
-    // Fetch only English Bibles using ISO code
+    // Fetch English Bibles from API and return id, abbreviation, name
     const response = await fetch(`${BASE_URL}/bibles?language=eng`, { headers });
-    const data = await response.json();
-    res.json(data.data);
+    const json = await response.json();
+    const bibles = json.data.map((b: any) => ({
+      id: b.id,
+      abbreviation: b.abbreviation,
+      name: b.name,
+    }));
+    res.json(bibles);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch Bibles", error: err });
   }
