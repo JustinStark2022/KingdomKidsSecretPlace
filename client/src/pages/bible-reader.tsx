@@ -27,7 +27,7 @@ export default function BibleReader() {
   const [bibleId, setBibleId] = useState("");
   const [bookId, setBookId] = useState("");
   const [chapterId, setChapterId] = useState("");
-  const [verseSelect, setVerseSelect] = useState("");
+  const [verseSelect, setVerseSelect] = useState("entire");
   const [isPlaying, setIsPlaying] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -93,7 +93,7 @@ export default function BibleReader() {
   });
 
   // Fetch chapter content when showing whole chapter
-  const readChapter = verseSelect === "";
+  const readChapter = verseSelect === "entire";
   const { data: chapterContent, isLoading: loadingChapterContent } = useQuery({
     queryKey: ["chapterContent", bibleId, chapterId],
     queryFn: async () => {
@@ -228,7 +228,7 @@ export default function BibleReader() {
                     <SelectValue placeholder="Select verse or entire chapter" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Entire Chapter</SelectItem>
+                    <SelectItem value="entire">Entire Chapter</SelectItem>
                     {loadingVerses ? <SelectItem value="loading" disabled>Loading...</SelectItem> :
                       verseList.map((v: any) => (
                         <SelectItem key={v.id} value={v.id}>{v.number}</SelectItem>
@@ -240,7 +240,7 @@ export default function BibleReader() {
             <div className="mb-4 flex items-center gap-4">
               <Button
                 onClick={isPlaying ? stopTTS : playTTS}
-                disabled={readChapter ? !verses.length : !singleVerse}
+                disabled={readChapter ? verses.length === 0 : !singleVerse}
                 variant="secondary"
               >
                 <Volume2 className="mr-2 h-5 w-5" />
