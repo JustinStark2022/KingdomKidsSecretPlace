@@ -39,6 +39,7 @@ import {
   Search
 } from "lucide-react";
 import { Child } from "@/types/user";
+import { fetchChildren } from "@/api/children";
 
 interface FlaggedContent {
   id: number;
@@ -56,11 +57,8 @@ export default function ContentMonitoring() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: children = [] } = useQuery<Child[]>({
-    queryKey: ["/api/users/children"],
-    queryFn: async () => {
-      const res = await apiRequest("GET", "/api/users/children");
-      return res.json();
-    },
+    queryKey: ["children"],
+    queryFn: fetchChildren,
   });
 
   const { data: flaggedContent = [], isLoading: isLoadingFlagged } = useQuery<FlaggedContent[]>({
@@ -161,7 +159,7 @@ export default function ContentMonitoring() {
               <SelectContent>
                 <SelectItem value="all">All Children</SelectItem>
                 {children.map((child) => (
-                  <SelectItem key={child.id} value={child.first_name}>
+                  <SelectItem key={child.id} value={child.id.toString()}>
                     {child.first_name} {child.last_name}
                   </SelectItem>
                 ))}
@@ -183,8 +181,8 @@ export default function ContentMonitoring() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             <Card className="border-0 shadow-md">
-              <CardHeader className="pb-2">
-                <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+              <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+                <CardHeader className="pb-2">
                   <TabsList className="grid grid-cols-4">
                     <TabsTrigger value="flagged" className="flex items-center">
                       <AlertCircle className="h-4 w-4 mr-2" />
@@ -203,11 +201,70 @@ export default function ContentMonitoring() {
                       Websites
                     </TabsTrigger>
                   </TabsList>
-                </Tabs>
-              </CardHeader>
-              <CardContent>
-                {/* Tab Contents Would Go Here */}
-              </CardContent>
+                </CardHeader>
+                <CardContent>
+                  <TabsContent value="flagged">
+                    {isLoadingFlagged ? (
+                      <p>Loading flagged content...</p>
+                    ) : flaggedContent.length === 0 ? (
+                      <p>No flagged content.</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {flaggedContent.map((flag) => (
+                          <li key={flag.id} className="p-3 border-l-4 rounded border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20">
+                            <p className="text-sm font-medium">{flag.name}</p>
+                            <p className="text-xs text-gray-500">
+                              {flag.contentType} - {flag.flagReason}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </TabsContent>
+                  <TabsContent value="games">
+                    {flaggedContent.filter(c => c.contentType === 'game').map((flag) => (
+                      <div key={flag.id} className="p-3 border rounded mb-2 flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{flag.name}</p>
+                          <p className="text-sm text-gray-500">{flag.flagReason}</p>
+                        </div>
+                        <div className="space-x-2">
+                          <Button size="sm" variant="ghost" onClick={() => approveContentMutation.mutate(flag.id)}>Approve</Button>
+                          <Button size="sm" variant="destructive" onClick={() => blockContentMutation.mutate(flag.id)}>Block</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </TabsContent>
+                  <TabsContent value="videos">
+                    {flaggedContent.filter(c => c.contentType === 'video').map((flag) => (
+                      <div key={flag.id} className="p-3 border rounded mb-2 flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{flag.name}</p>
+                          <p className="text-sm text-gray-500">{flag.flagReason}</p>
+                        </div>
+                        <div className="space-x-2">
+                          <Button size="sm" variant="ghost" onClick={() => approveContentMutation.mutate(flag.id)}>Approve</Button>
+                          <Button size="sm" variant="destructive" onClick={() => blockContentMutation.mutate(flag.id)}>Block</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </TabsContent>
+                  <TabsContent value="websites">
+                    {flaggedContent.filter(c => c.contentType === 'website').map((flag) => (
+                      <div key={flag.id} className="p-3 border rounded mb-2 flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{flag.name}</p>
+                          <p className="text-sm text-gray-500">{flag.flagReason}</p>
+                        </div>
+                        <div className="space-x-2">
+                          <Button size="sm" variant="ghost" onClick={() => approveContentMutation.mutate(flag.id)}>Approve</Button>
+                          <Button size="sm" variant="destructive" onClick={() => blockContentMutation.mutate(flag.id)}>Block</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </TabsContent>
+                </CardContent>
+              </Tabs>
             </Card>
           </div>
           <div>

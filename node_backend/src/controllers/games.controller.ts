@@ -50,4 +50,19 @@ export const flagGame = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({ message: "Failed to flag game", error: err });
   }
+};
+
+export const approveGame = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    const [updated] = await db
+      .update(games)
+      .set({ flagged: false })
+      .where(eq(games.id, id))
+      .returning();
+    if (!updated) return res.status(404).json({ message: "Game not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to approve game", error: err });
+  }
 }; 

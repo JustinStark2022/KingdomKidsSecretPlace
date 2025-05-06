@@ -43,11 +43,16 @@ export default function BibleReader() {
     },
   });
 
+  // Only keep main versions
+  const mainVersions = ["NIrV", "NIV", "KJV", "NLT", "ESV"];
+  const filteredBibles = bibles.filter((b: any) => mainVersions.includes(b.abbreviation));
+
   // Set default to NIrV if available, else first, after bibles load
   useEffect(() => {
-    if (!bibleId && bibles.length > 0) {
-      const nirv = bibles.find((b: any) => b.abbreviation === "NIrV");
-      setBibleId(nirv ? nirv.id : bibles[0].id);
+    if (!bibleId && filteredBibles.length > 0) {
+      const nirv = filteredBibles.find((b: any) => b.abbreviation === "NIrV");
+      const defaultId = nirv ? nirv.id : filteredBibles[0].id;
+      setBibleId(defaultId.toString());
     }
   }, [bibles, bibleId]);
 
@@ -155,10 +160,15 @@ export default function BibleReader() {
                     <SelectValue placeholder="Select version" />
                   </SelectTrigger>
                   <SelectContent>
-                    {loadingBibles ? <SelectItem value="loading" disabled>Loading...</SelectItem> :
-                      bibles?.map((b: any) => (
-                        <SelectItem key={b.id} value={b.id}>{b.abbreviation} - {b.name}</SelectItem>
-                      ))}
+                    {loadingBibles ? (
+                      <SelectItem value="loading" disabled>Loading...</SelectItem>
+                    ) : (
+                      filteredBibles.map((b: any) => (
+                        <SelectItem key={b.id} value={b.id.toString()}>
+                          {b.abbreviation} - {b.name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -169,10 +179,15 @@ export default function BibleReader() {
                     <SelectValue placeholder="Select book" />
                   </SelectTrigger>
                   <SelectContent>
-                    {loadingBooks ? <SelectItem value="loading" disabled>Loading...</SelectItem> :
-                      books?.map((b: any) => (
-                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-                      ))}
+                    {loadingBooks ? (
+                      <SelectItem value="loading" disabled>Loading...</SelectItem>
+                    ) : (
+                      books.map((b: any) => (
+                        <SelectItem key={b.id} value={b.id.toString()}>
+                          {b.name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -183,10 +198,15 @@ export default function BibleReader() {
                     <SelectValue placeholder="Select chapter" />
                   </SelectTrigger>
                   <SelectContent>
-                    {loadingChapters ? <SelectItem value="loading" disabled>Loading...</SelectItem> :
-                      chapters?.map((c: any) => (
-                        <SelectItem key={c.id} value={c.id}>{c.number || c.id}</SelectItem>
-                      ))}
+                    {loadingChapters ? (
+                      <SelectItem value="loading" disabled>Loading...</SelectItem>
+                    ) : (
+                      chapters.map((c: any) => (
+                        <SelectItem key={c.id} value={c.id.toString()}>
+                          {c.number || c.id}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
