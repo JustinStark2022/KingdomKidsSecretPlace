@@ -2,7 +2,7 @@ import { Child } from "@/types/user";
 
 // ✅ Fetch the list of children
 export const fetchChildren = async (): Promise<Child[]> => {
-  const res = await fetch("/api/users/children", {
+  const res = await fetch("/api/user/children", {
     credentials: "include",
   });
 
@@ -21,7 +21,7 @@ export const createChild = async (childData: {
   first_name: string;
   last_name: string;
 }): Promise<Child> => {
-  const response = await fetch("/api/children", {
+  const response = await fetch("/api/user/child", {
     method: "POST",
     credentials: "include",
     headers: {

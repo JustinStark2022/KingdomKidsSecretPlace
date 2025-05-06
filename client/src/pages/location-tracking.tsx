@@ -33,9 +33,9 @@ export default function LocationTracking() {
   const [autoRefresh, setAutoRefresh] = useState(false);
 
   const { data: children = [] } = useQuery<Child[]>({
-    queryKey: ["/api/users/children"],
+    queryKey: ["/api/user/children"],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/users/children");
+      const res = await apiRequest("GET", "/api/user/children");
       return res.json();
     },
   });
