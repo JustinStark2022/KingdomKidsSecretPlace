@@ -40,15 +40,7 @@ import {
 } from "lucide-react";
 import { Child } from "@/types/user";
 import { fetchChildren } from "@/api/children";
-
-interface FlaggedContent {
-  id: number;
-  name: string;
-  platform: string;
-  contentType: 'game' | 'video' | 'website' | 'app';
-  flagReason: 'violence' | 'language' | 'occult' | 'blasphemy' | 'sexual' | string;
-  description: string;
-}
+import { getFlaggedContent, FlaggedContent } from "@/api/monitoring";
 
 export default function ContentMonitoring() {
   const { toast } = useToast();
@@ -61,12 +53,13 @@ export default function ContentMonitoring() {
     queryFn: fetchChildren,
   });
 
-  const { data: flaggedContent = [], isLoading: isLoadingFlagged } = useQuery<FlaggedContent[]>({
-    queryKey: ["/api/games/flagged"],
-    queryFn: async () => {
-      const res = await apiRequest("GET", "/api/games/flagged");
-      return res.json();
-    },
+  const {
+    data: flaggedContent = [],
+    isLoading: isLoadingFlagged,
+    error: flaggedError,
+  } = useQuery<FlaggedContent[]>({
+    queryKey: ["flaggedContent"],
+    queryFn: getFlaggedContent,
   });
 
   const approveContentMutation = useMutation({

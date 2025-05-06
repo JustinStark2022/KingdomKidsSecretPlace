@@ -7,7 +7,7 @@ export interface FlaggedContent {
   }
   
   export async function getFlaggedContent(): Promise<FlaggedContent[]> {
-    const res = await fetch("/api/games/flagged", {
+    const res = await fetch("/api/alerts/recent", {
       credentials: "include",
     });
   
