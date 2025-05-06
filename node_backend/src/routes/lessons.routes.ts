@@ -10,8 +10,8 @@ import {
 
 const router = Router();
 // router.get("/protected-route", verifyToken, controllerFunction); // Removed or commented out due to undefined controllerFunction
-router.get("/lessons", verifyToken, getBibleLessons);
-router.get("/lessons/progress", verifyToken, getUserLessonProgress);
-router.post("/lessons/progress", verifyToken, updateLessonProgress);
+router.get("/", verifyToken, getBibleLessons);
+router.get("/progress", verifyToken, getUserLessonProgress);
+router.post("/progress", verifyToken, updateLessonProgress);
 
 export default router;

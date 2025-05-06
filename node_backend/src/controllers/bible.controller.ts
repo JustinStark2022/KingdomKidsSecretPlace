@@ -53,7 +53,7 @@ export const getChapterContent = async (req: Request, res: Response) => {
   }
 
   try {
-    const response = await fetch(`${BASE_URL}/bibles/${bibleId}/chapters/${chapterId}`, { headers });
+    const response = await fetch(`${BASE_URL}/bibles/${bibleId}/chapters/${chapterId}?content-type=text.html`, { headers });
     const data = await response.json();
     res.json(data.data);
   } catch (err) {
@@ -68,7 +68,7 @@ export const getVerse = async (req: Request, res: Response) => {
   }
 
   try {
-    const response = await fetch(`${BASE_URL}/bibles/${bibleId}/verses/${verseId}`, { headers });
+    const response = await fetch(`${BASE_URL}/bibles/${bibleId}/verses/${verseId}?content-type=text.html`, { headers });
     const data = await response.json();
     res.json(data.data);
   } catch (err) {
