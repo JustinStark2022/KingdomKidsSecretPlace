@@ -106,6 +106,15 @@ export const devotionals = pgTable("devotionals", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
+// ─── Games ───────────────────────────────────────────────────────────────────
+export const games = pgTable("games", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  category: varchar("category", { length: 100 }),
+  flagged: boolean("flagged").notNull().default(false),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type User = InferModel<typeof users>;
 
 export type NewUser = InferModel<typeof users, "insert">;

@@ -82,11 +82,20 @@ export default function ParentDashboard() {
                             className="w-8 h-8 rounded-full mr-2"
                             alt="avatar"
                           />
-                          <span>{child.first_name} {child.last_name}</span>
+                          <span className="font-semibold mr-1">{child.username}</span>
+                          <span className="text-gray-500">({child.first_name} {child.last_name})</span>
                         </div>
                       </td>
-                      <td>—</td>
-                      <td>—</td>
+                      <td>
+                        {child.screenTime
+                          ? `${child.screenTime.usage_today_total}m / ${child.screenTime.daily_limits_total}m`
+                          : '—'}
+                      </td>
+                      <td>
+                        {child.totalLessons != null
+                          ? `${child.completedLessons}/${child.totalLessons}`
+                          : '—'}
+                      </td>
                       <td>
                         <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
                           Online

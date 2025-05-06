@@ -1,4 +1,7 @@
 import { Request, Response } from "express";
+import { db } from "../db/db";
+import { screen_time as screenTimeTable } from "../db/schema";
+import { eq } from "drizzle-orm";
 
 export const getScreenTimeData = async (_req: Request, res: Response) => {
   res.json({
@@ -25,5 +28,19 @@ export const getScreenTimeData = async (_req: Request, res: Response) => {
     schedule: [],
     blockedApps: []
   });
+};
+
+// New: get screen time for any user by ID
+export const getScreenTimeForUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const [record] = await db
+      .select()
+      .from(screenTimeTable)
+      .where(eq(screenTimeTable.user_id, userId));
+    res.json(record || null);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch screen time for user", error: err });
+  }
 };
 

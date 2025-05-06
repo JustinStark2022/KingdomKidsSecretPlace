@@ -4,6 +4,8 @@ import { db } from "@/db/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import { screen_time } from "@/db/schema";
+import { lesson_progress } from "@/db/schema";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -25,8 +27,36 @@ export const getUser = async (req: AuthenticatedRequest, res: Response) => {
 
 export const getChildren = async (req: AuthenticatedRequest, res: Response) => {
   const parent_id = req.user?.id;
-  const result = await db.select().from(users).where(eq(users.parent_id, parent_id));
-  res.json(result);
+  if (!parent_id) return res.status(401).json({ message: "Unauthorized" });
+
+  const children = await db.select().from(users).where(eq(users.parent_id, parent_id));
+
+  // For each child, fetch screen time and lesson progress metrics
+  const results = await Promise.all(
+    children.map(async (child) => {
+      // Screen time record
+      const [screenTime] = await db
+        .select()
+        .from(screen_time)
+        .where(eq(screen_time.user_id, child.id));
+      // Lesson progress
+      const progress = await db
+        .select()
+        .from(lesson_progress)
+        .where(eq(lesson_progress.user_id, child.id));
+
+      const completedCount = progress.filter(p => p.completed).length;
+
+      return {
+        ...child,
+        screenTime: screenTime || null,
+        totalLessons: progress.length,
+        completedLessons: completedCount,
+      };
+    })
+  );
+
+  res.json(results);
 };
 
 export const createChild = async (req: AuthenticatedRequest, res: Response) => {

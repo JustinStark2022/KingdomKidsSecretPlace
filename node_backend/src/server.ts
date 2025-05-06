@@ -14,6 +14,7 @@ import friendsRoutes from "./routes/friends.routes";
 import locationRoutes from "./routes/location.routes";
 import screenTimeRoutes from "./routes/screenTime.routes";
 import childDashboardRoutes from "@/routes/childDashboard.routes";
+import gamesRoutes from "./routes/games.routes";
 
 import { logger } from "./utils/logger";
 import dotenv from "dotenv";
@@ -68,6 +69,7 @@ app.use("/api/friends", friendsRoutes);
 app.use("/api/location", locationRoutes);
 app.use("/api/screentime", screenTimeRoutes);
 app.use("/api/child-dashboard", childDashboardRoutes);
+app.use("/api/games", gamesRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

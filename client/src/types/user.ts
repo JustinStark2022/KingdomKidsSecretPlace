@@ -13,4 +13,11 @@ export interface User {
 
 export interface Child extends User {
   parent_id: number;
+  screenTime?: {
+    usage_today_total: number;
+    daily_limits_total: number;
+    [key: string]: any;
+  } | null;
+  totalLessons?: number;
+  completedLessons?: number;
 }

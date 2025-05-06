@@ -12,7 +12,7 @@ export const getBibles = async (_req: Request, res: Response) => {
   try {
     const response = await fetch(`${BASE_URL}/bibles`, { headers });
     const data = await response.json();
-    res.json(data);
+    res.json(data.data);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch Bibles", error: err });
   }
@@ -25,7 +25,7 @@ export const getBooks = async (req: Request, res: Response) => {
   try {
     const response = await fetch(`${BASE_URL}/bibles/${bibleId}/books`, { headers });
     const data = await response.json();
-    res.json(data);
+    res.json(data.data);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch books", error: err });
   }
@@ -40,7 +40,7 @@ export const getChapters = async (req: Request, res: Response) => {
   try {
     const response = await fetch(`${BASE_URL}/bibles/${bibleId}/books/${bookId}/chapters`, { headers });
     const data = await response.json();
-    res.json(data);
+    res.json(data.data);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch chapters", error: err });
   }
@@ -55,7 +55,7 @@ export const getChapterContent = async (req: Request, res: Response) => {
   try {
     const response = await fetch(`${BASE_URL}/bibles/${bibleId}/chapters/${chapterId}`, { headers });
     const data = await response.json();
-    res.json(data);
+    res.json(data.data);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch chapter content", error: err });
   }
@@ -70,7 +70,7 @@ export const getVerse = async (req: Request, res: Response) => {
   try {
     const response = await fetch(`${BASE_URL}/bibles/${bibleId}/verses/${verseId}`, { headers });
     const data = await response.json();
-    res.json(data);
+    res.json(data.data);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch verse", error: err });
   }
