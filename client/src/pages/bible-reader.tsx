@@ -27,8 +27,7 @@ export default function BibleReader() {
   const [bibleId, setBibleId] = useState("");
   const [bookId, setBookId] = useState("");
   const [chapterId, setChapterId] = useState("");
-  const [verseId, setVerseId] = useState("");
-  const [readWholeChapter, setReadWholeChapter] = useState(true);
+  const [verseSelect, setVerseSelect] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -82,35 +81,43 @@ export default function BibleReader() {
     enabled: !!bibleId && !!bookId,
   });
 
-  // Fetch chapter content
+  // New: fetch verses list for selected chapter
+  const { data: verseList = [], isLoading: loadingVerses } = useQuery({
+    queryKey: ["verseList", bibleId, chapterId],
+    queryFn: async () => {
+      if (!bibleId || !chapterId) return [];
+      const res = await fetch(`/api/bible/bibles/${bibleId}/chapters/${chapterId}/verses`);
+      return res.json();
+    },
+    enabled: !!bibleId && !!chapterId,
+  });
+
+  // Fetch chapter content when showing whole chapter
+  const readChapter = verseSelect === "";
   const { data: chapterContent, isLoading: loadingChapterContent } = useQuery({
     queryKey: ["chapterContent", bibleId, chapterId],
     queryFn: async () => {
-      if (!bibleId || !chapterId) return null;
-      const res = await fetch(`/api/bible/bibles/${bibleId}/chapters/${chapterId}`);
-      const data = await res.json();
-      return data;
+      const res = await fetch(`/api/bible/bibles/${bibleId}/chapters/${chapterId}?content-type=text.html`);
+      return (await res.json()).data;
     },
-    enabled: !!bibleId && !!chapterId && readWholeChapter,
+    enabled: readChapter && !!bibleId && !!chapterId,
   });
 
-  // Fetch verse content
+  // Fetch verse content when a specific verse is selected
   const { data: verseContent, isLoading: loadingVerseContent } = useQuery({
-    queryKey: ["verseContent", bibleId, verseId],
+    queryKey: ["verseContent", bibleId, verseSelect],
     queryFn: async () => {
-      if (!bibleId || !verseId) return null;
-      const res = await fetch(`/api/bible/bibles/${bibleId}/verses/${verseId}`);
-      const data = await res.json();
-      return data;
+      const res = await fetch(`/api/bible/bibles/${bibleId}/verses/${verseSelect}?content-type=text.html`);
+      return (await res.json()).data;
     },
-    enabled: !!bibleId && !!verseId && !readWholeChapter,
+    enabled: !!verseSelect,
   });
 
   // Parse verses from chapter content
-  const verses = chapterContent && typeof chapterContent === 'object' && 'content' in chapterContent && chapterContent.content
-    ? (chapterContent.content.match(/<span class='verse'[^>]*>(.*?)<\/span>/g)?.map((v: string) => v.replace(/<[^>]+>/g, "")) || [])
+  const verses = readChapter && chapterContent?.content
+    ? chapterContent.content.match(/<span class='verse'[^>]*>(.*?)<\/span>/g)?.map((v: string) => v.replace(/<[^>]+>/g, "")) || []
     : [];
-  const singleVerse = verseContent && typeof verseContent === 'object' && 'content' in verseContent && verseContent.content
+  const singleVerse = !readChapter && verseContent?.content
     ? verseContent.content.replace(/<[^>]+>/g, "")
     : "";
 
@@ -118,7 +125,7 @@ export default function BibleReader() {
   const playTTS = () => {
     setIsPlaying(true);
     setHighlightIndex(0);
-    let lines = readWholeChapter ? verses : [singleVerse];
+    let lines = readChapter ? verses : [singleVerse];
     let i = 0;
     const speakLine = (idx: number) => {
       if (!lines[idx]) {
@@ -216,30 +223,24 @@ export default function BibleReader() {
               </div>
               <div>
                 <label className="block mb-1 font-medium">Verse</label>
-                <input
-                  className="w-full border rounded px-2 py-1"
-                  type="text"
-                  value={verseId}
-                  onChange={e => setVerseId(e.target.value)}
-                  placeholder="Optional: Enter verse ID"
-                  disabled={!chapterId || readWholeChapter}
-                />
-                <div className="flex items-center mt-2">
-                  <input
-                    type="checkbox"
-                    checked={readWholeChapter}
-                    onChange={e => setReadWholeChapter(e.target.checked)}
-                    id="read-whole-chapter"
-                    className="mr-2"
-                  />
-                  <label htmlFor="read-whole-chapter">Read entire chapter</label>
-                </div>
+                <Select value={verseSelect} onValueChange={setVerseSelect} disabled={!chapterId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select verse or entire chapter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Entire Chapter</SelectItem>
+                    {loadingVerses ? <SelectItem value="loading" disabled>Loading...</SelectItem> :
+                      verseList.map((v: any) => (
+                        <SelectItem key={v.id} value={v.id}>{v.number}</SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="mb-4 flex items-center gap-4">
               <Button
                 onClick={isPlaying ? stopTTS : playTTS}
-                disabled={readWholeChapter ? !verses.length : !singleVerse}
+                disabled={readChapter ? !verses.length : !singleVerse}
                 variant="secondary"
               >
                 <Volume2 className="mr-2 h-5 w-5" />
@@ -247,7 +248,7 @@ export default function BibleReader() {
               </Button>
             </div>
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 min-h-[200px]">
-              {readWholeChapter ? (
+              {readChapter ? (
                 loadingChapterContent ? (
                   <div className="flex items-center"><Loader2 className="animate-spin mr-2" /> Loading chapter...</div>
                 ) : (
