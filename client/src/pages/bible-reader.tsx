@@ -18,119 +18,69 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { BookOpen, Volume2, Loader2 } from "lucide-react";
-import { bibleBooks } from "@/lib/booklist";
 
 export default function BibleReader() {
   const { user } = useAuth();
   const isChild = user?.role === "child";
   const Layout = isChild ? ChildLayout : ParentLayout;
 
-  const [bibleId, setBibleId] = useState("");
-  const [bookAbbr, setBookAbbr] = useState("");
-  const [chapterNum, setChapterNum] = useState("");
-  const [verseId, setVerseId] = useState("entire");
+  const [bibleId, setBibleId] = useState("de4e12af7f28f599-02");
+  const [book, setBook] = useState("GEN");
+  const [chapter, setChapter] = useState("1");
+  const [verse, setVerse] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const chapterId = bookAbbr && chapterNum ? `${bookAbbr}.${chapterNum}` : "";
-  const fullVerseId =
-    verseId !== "entire" ? `${bookAbbr}.${chapterNum}.${verseId}` : "";
+  const passage = verse ? `${book}.${chapter}.${verse}` : `${book}.${chapter}`;
 
-    const {
-      data: biblesData,
-      isLoading: loadingBibles,
-      isError: errorLoadingBibles,
-    } = useQuery({
-      queryKey: ["bibles"],
-      queryFn: async () => {
-        const res = await fetch("/api/bible/bibles", {
-          credentials: "include",
-        });
-        const json = await res.json();
-        console.log("🔍 Bible fetch result:", json); // <- required log
-    
-        if (!json?.data || !Array.isArray(json.data)) {
-          throw new Error("Bible list not available");
-        }
-    
-        return json.data;
-      },
-      retry: false,
-    });
-    
-    
-    const mainVersions = ["ENGKJV", "ENGNIV", "NIRV", "ENGNLT", "ESV", "WEB", "ASV"];
-
-
-    console.log("📖 All abbreviations:", biblesData?.map((b: any) => b.abbreviation));
-    const filteredBibles = (biblesData || []).filter((b: any) =>
-      mainVersions.includes(b.abbreviation?.toUpperCase())
-    );
-    
-  useEffect(() => {
-    if (
-      bibleId === "" &&
-      Array.isArray(filteredBibles) &&
-      filteredBibles.length > 0
-    ) {
-      const defaultBible =
-        filteredBibles.find(
-          (b: { abbreviation: string }) =>
-            b.abbreviation?.toUpperCase() === "NIRV"
-        ) || filteredBibles[0];
-
-      setBibleId(defaultBible.id);
-    }
-  }, [filteredBibles]);
-
-  const { data: chapterData, isLoading: loadingChapter } = useQuery({
-    queryKey: ["chapter", bibleId, chapterId],
+  const {
+    data: bibleVersionsData = { versions: [] },
+    isLoading: versionsLoading,
+  } = useQuery({
+    queryKey: ["bibleVersions"],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/bible/bibles/${bibleId}/chapters/${chapterId}`
-      );
+      const res = await fetch("/api/bible/bibles");
       const json = await res.json();
-      return json.data;
+      return { versions: json.data.map((v: any) => ({ id: v.id, name: v.name || v.abbreviation })) };
     },
-    enabled: !!bibleId && !!chapterId && verseId === "entire",
   });
-  console.log("📘 Chapter Data:", chapterData);
-  const { data: verseData, isLoading: loadingVerse } = useQuery({
-    queryKey: ["verse", bibleId, fullVerseId],
+
+  const { data: verseData, isLoading: contentLoading, error } = useQuery({
+    queryKey: ["bibleVerse", bibleId, passage],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/bible/bibles/${bibleId}/verses/${fullVerseId}`
-      );
+      const res = await fetch(`/api/bible/bibles/${bibleId}/passages/${encodeURIComponent(passage)}?content-type=text.html`);
       const json = await res.json();
-      return json.data;
+      return json?.data?.content || "Verse not found.";
     },
-    enabled: !!bibleId && !!fullVerseId && verseId !== "entire",
+    enabled: !!bibleId && !!book && !!chapter,
   });
-  console.log("📘 Chapter Data:", chapterData);
-  console.log("📖 Verse Data:", verseData);
-  const parseHTML = (html: string): string[] =>
-    html.match(/<span class='verse'[^>]*>(.*?)<\/span>/g)?.map((v) =>
-      v.replace(/<[^>]+>/g, "")
-    ) || [];
 
-  const verses =
-    verseId === "entire" && chapterData?.content
-      ? parseHTML(chapterData.content)
-      : [];
+  const selectedBookChapters = {
+    GEN: 50, EXO: 40, LEV: 27, NUM: 36, DEU: 34, JOS: 24, JDG: 21, RUT: 4,
+    "1SA": 31, "2SA": 24, "1KI": 22, "2KI": 25, "1CH": 29, "2CH": 36, EZR: 10,
+    NEH: 13, EST: 10, JOB: 42, PSA: 150, PRO: 31, ECC: 12, SNG: 8, ISA: 66,
+    JER: 52, LAM: 5, EZK: 48, DAN: 12, HOS: 14, JOL: 3, AMO: 9, OBA: 1, JON: 4,
+    MIC: 7, NAM: 3, HAB: 3, ZEP: 3, HAG: 2, ZEC: 14, MAL: 4, MAT: 28, MRK: 16,
+    LUK: 24, JHN: 21, ACT: 28, ROM: 16, "1CO": 16, "2CO": 13, GAL: 6, EPH: 6,
+    PHP: 4, COL: 4, "1TH": 5, "2TH": 3, "1TI": 6, "2TI": 4, TIT: 3, PHM: 1,
+    HEB: 13, JAS: 5, "1PE": 5, "2PE": 3, "1JN": 5, "2JN": 1, "3JN": 1, JUD: 1, REV: 22,
+  }[book] || 50;
 
-  const singleVerse =
-    verseId !== "entire" && verseData?.content
-      ? verseData.content.replace(/<[^>]+>/g, "")
-      : "";
+  const parseHTML = (html: string): string[] => {
+    if (!html) return [];
+    const container = document.createElement("div");
+    container.innerHTML = html;
+    const spans = container.querySelectorAll("span.verse");
+    return Array.from(spans).map((span) => span.textContent || "");
+  };
 
-  const verseNumbers =
-    bookAbbr && chapterNum
-      ? Array.from({ length: 50 }, (_, i) => i + 1)
-      : [];
+  const isWholeChapter = verse === "";
+  const parsedVerses = isWholeChapter ? parseHTML(verseData as string) : [];
+  const singleVerse = !isWholeChapter ? (verseData as string) : "";
 
   const playTTS = () => {
-    const lines = verseId === "entire" ? verses : [singleVerse];
+    const lines = isWholeChapter ? parsedVerses : [singleVerse];
     let index = 0;
 
     const speak = (idx: number) => {
@@ -139,7 +89,6 @@ export default function BibleReader() {
         setHighlightIndex(null);
         return;
       }
-
       setHighlightIndex(idx);
       const utter = new SpeechSynthesisUtterance(lines[idx]);
       utter.onend = () => speak(idx + 1);
@@ -164,13 +113,11 @@ export default function BibleReader() {
         <Card>
           <CardHeader className="bg-primary-100 dark:bg-primary-900/20 rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-primary-800 dark:text-primary-200">
-              <BookOpen className="w-5 h-5" />
-              Bible Reader
+              <BookOpen className="w-5 h-5" /> Bible Reader
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              {/* Version */}
               <div>
                 <label className="block mb-1 font-medium">Version</label>
                 <Select value={bibleId} onValueChange={setBibleId}>
@@ -178,89 +125,58 @@ export default function BibleReader() {
                     <SelectValue placeholder="Select version" />
                   </SelectTrigger>
                   <SelectContent>
-                    {loadingBibles ? (
-                      <SelectItem disabled value="loading">
-                        Loading...
-                      </SelectItem>
-                    ) : (
-                      filteredBibles.map(
-                        (b: { id: string; abbreviation: string }) => (
-                          <SelectItem key={b.id} value={b.id}>
-                            {b.abbreviation}
-                          </SelectItem>
-                        )
-                      )
-                    )}
+                  {bibleVersionsData.versions.map((v: { id: string; name: string }) => (
+                    <SelectItem key={v.id} value={v.id}>
+                      {v.name}
+                    </SelectItem>
+                  ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Book */}
               <div>
                 <label className="block mb-1 font-medium">Book</label>
-                <Select value={bookAbbr} onValueChange={setBookAbbr}>
+                <Select value={book} onValueChange={setBook}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select book" />
                   </SelectTrigger>
                   <SelectContent>
-                    {bibleBooks.map((book) => (
-                      <SelectItem
-                        key={book.abbreviation}
-                        value={book.abbreviation}
-                      >
-                        {book.name}
+                    {Object.entries(selectedBookChapters).map(([abbr, chapters]) => (
+                      <SelectItem key={abbr} value={abbr}>
+                        {abbr}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Chapter */}
               <div>
                 <label className="block mb-1 font-medium">Chapter</label>
-                <Select
-                  value={chapterNum}
-                  onValueChange={setChapterNum}
-                  disabled={!bookAbbr}
-                >
+                <Select value={chapter} onValueChange={setChapter}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select chapter" />
                   </SelectTrigger>
                   <SelectContent>
-                    {bookAbbr &&
-                      Array.from(
-                        {
-                          length:
-                            bibleBooks.find(
-                              (b) => b.abbreviation === bookAbbr
-                            )?.chapters || 0,
-                        },
-                        (_, i) => i + 1
-                      ).map((num) => (
-                        <SelectItem key={num} value={num.toString()}>
-                          {num}
-                        </SelectItem>
-                      ))}
+                    {Array.from({ length: selectedBookChapters }, (_, i) => (
+                      <SelectItem key={i + 1} value={(i + 1).toString()}>
+                        Chapter {i + 1}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Verse */}
               <div>
                 <label className="block mb-1 font-medium">Verse</label>
-                <Select
-                  value={verseId}
-                  onValueChange={setVerseId}
-                  disabled={!chapterNum}
-                >
+                <Select value={verse || "0"} onValueChange={(val) => setVerse(val === "0" ? "" : val)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select verse" />
+                    <SelectValue placeholder="Whole Chapter" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="entire">Entire Chapter</SelectItem>
-                    {verseNumbers.map((num) => (
-                      <SelectItem key={num} value={num.toString()}>
-                        {num}
+                    <SelectItem value="0">Whole Chapter</SelectItem>
+                    {Array.from({ length: 50 }, (_, i) => (
+                      <SelectItem key={i + 1} value={(i + 1).toString()}>
+                        Verse {i + 1}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -269,49 +185,27 @@ export default function BibleReader() {
             </div>
 
             <div className="mb-4">
-              <Button
-                onClick={isPlaying ? stopTTS : playTTS}
-                disabled={verseId === "entire"
-                  ? verses.length === 0
-                  : !singleVerse}
-              >
+              <Button onClick={isPlaying ? stopTTS : playTTS} disabled={isWholeChapter ? parsedVerses.length === 0 : !singleVerse}>
                 <Volume2 className="w-4 h-4 mr-2" />
                 {isPlaying ? "Stop" : "Play"}
               </Button>
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg min-h-[200px] space-y-2">
-              {verseId === "entire" ? (
-                loadingChapter ? (
-                  <div className="flex items-center">
-                    <Loader2 className="animate-spin mr-2" /> Loading chapter...
-                  </div>
-                ) : (
-                  verses.map((line, idx) => (
-                    <div
-                      key={idx}
-                      className={
-                        highlightIndex === idx
-                          ? "bg-yellow-200 dark:bg-yellow-600/40 px-2 rounded"
-                          : ""
-                      }
-                    >
-                      {line}
-                    </div>
-                  ))
-                )
-              ) : loadingVerse ? (
+              {contentLoading ? (
                 <div className="flex items-center">
-                  <Loader2 className="animate-spin mr-2" /> Loading verse...
+                  <Loader2 className="animate-spin mr-2" /> Loading scripture...
                 </div>
+              ) : error ? (
+                <p className="text-red-500">Error loading scripture.</p>
+              ) : isWholeChapter ? (
+                parsedVerses.map((line, idx) => (
+                  <div key={idx} className={highlightIndex === idx ? "bg-yellow-200 dark:bg-yellow-600/40 px-2 rounded" : ""}>
+                    {line}
+                  </div>
+                ))
               ) : (
-                <div
-                  className={
-                    highlightIndex === 0
-                      ? "bg-yellow-200 dark:bg-yellow-600/40 px-2 rounded"
-                      : ""
-                  }
-                >
+                <div className={highlightIndex === 0 ? "bg-yellow-200 dark:bg-yellow-600/40 px-2 rounded" : ""}>
                   {singleVerse}
                 </div>
               )}
