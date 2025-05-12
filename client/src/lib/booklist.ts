@@ -1,4 +1,4 @@
-export const bibleBooks = [
+export const allBooks = [
     { name: "Genesis", abbreviation: "GEN", chapters: 50 },
     { name: "Exodus", abbreviation: "EXO", chapters: 40 },
     { name: "Leviticus", abbreviation: "LEV", chapters: 27 },
