@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "tsx --tsconfig tsconfig.json src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc",
-    "prepare": "husky install"
+    "build": "tsc"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

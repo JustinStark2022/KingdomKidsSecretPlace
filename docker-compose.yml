@@ -1,18 +1,22 @@
+version: '3.8'
+
 services:
   client:
     build: ./client
     ports:
-      - "5000:5000"   # Vite frontend
+      - "5173:5173"  # Vite frontend
     volumes:
       - ./client:/app
     environment:
       - NODE_ENV=development
+    command: npm run dev
 
   backend:
     build: ./node_backend
     ports:
-      - "5173:5173"   # Node backend
+      - "5000:5000"  # Node backend
     volumes:
       - ./node_backend:/app
     environment:
       - NODE_ENV=development
+    command: npm run dev
