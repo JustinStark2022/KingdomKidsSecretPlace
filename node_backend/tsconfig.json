@@ -20,6 +20,6 @@
     "allowJs": true,
     "noEmit": false
   },
-  "include": ["src", "drizzle.config.ts"],    // ✅ <-- ADD THIS
+  "include": ["src", "drizzle.config.ts"],    
   "exclude": ["node_modules", "dist"]
 }

@@ -1,22 +1,18 @@
-version: '3.8'
-
 services:
-  backend:
-    build:
-      context: ./node_backend
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./node_backend:/app
-    command: npm run dev
-
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    build: ./client
     ports:
-      - "5173:5173"
+      - "5000:5000"   # Vite frontend
     volumes:
       - ./client:/app
-    command: npm run dev
+    environment:
+      - NODE_ENV=development
+
+  backend:
+    build: ./node_backend
+    ports:
+      - "5173:5173"   # Node backend
+    volumes:
+      - ./node_backend:/app
+    environment:
+      - NODE_ENV=development

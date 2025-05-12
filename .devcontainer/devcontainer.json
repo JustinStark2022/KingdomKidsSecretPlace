@@ -1,0 +1,17 @@
+{
+  "name": "KingdomKidsWorkspace",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "backend",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [5000, 5173],
+  "postCreateCommand": "npm install -g tsx",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "remoteUser": "node"
+}
