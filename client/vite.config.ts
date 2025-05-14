@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
+      host: true,
       port: parseInt(env.PORT || "5173"), // Use the port from .env.client or default to 5173
       strictPort: true, // Fail if the port is already in use
       proxy: {
