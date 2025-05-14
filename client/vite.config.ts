@@ -5,8 +5,8 @@ import path from "path";
 import { loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current directory.
-  const env = loadEnv(mode, process.cwd(), '');
+  // Explicitly load .env.client from the root directory
+  const env = loadEnv(mode, process.cwd(), ".env.client")
   
   return {
     server: {

@@ -5,7 +5,7 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx --tsconfig tsconfig.json src/server.ts",
-    "start": "node dist/server.js",
+     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "build": "tsc"
   },
   "dependencies": {
