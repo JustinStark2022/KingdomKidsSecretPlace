@@ -76,7 +76,8 @@
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.24.3",
-    "zod-validation-error": "^3.4.0"
+    "zod-validation-error": "^3.4.0",
+    "rollup": "^3.20.0"
   },
   "devDependencies": {
     "@shadcn/ui": "latest",
@@ -99,8 +100,5 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "vite": "^6.2.4"
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.8"
   }
 }

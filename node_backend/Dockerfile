@@ -4,7 +4,10 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --omit=optional
+
+RUN npm install -g tsx && \
+    export PATH=$PATH:/usr/local/bin
 
 COPY . .
 
