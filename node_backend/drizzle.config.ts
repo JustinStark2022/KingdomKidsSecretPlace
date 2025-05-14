@@ -1,6 +1,9 @@
 // drizzle.config.ts
-import 'dotenv/config';
-import { z } from 'zod';
+import dotenv from "dotenv";
+import { z } from "zod";
+
+// Load environment variables from the renamed and relocated .env.node_backend file
+dotenv.config({ path: "../.env.node_backend" });
 
 // Validate database configuration
 const dbConfigSchema = z.object({
