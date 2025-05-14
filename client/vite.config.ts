@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      port: parseInt(env.PORT || "5173"),
-      strictPort: true,
+      port: parseInt(env.PORT || "5173"), // Use the port from .env.client or default to 5173
+      strictPort: true, // Fail if the port is already in use
       proxy: {
         "/api": {
           target: env.VITE_API_URL || "http://localhost:5000", // Proxy API requests to the backend
@@ -30,25 +30,25 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: path.resolve(__dirname, "dist"), // Output frontend build files to the "dist" directory
-      emptyOutDir: true,
-      sourcemap: mode === "development",
+      emptyOutDir: true, // Clear the output directory before building
+      sourcemap: mode === "development", // Generate sourcemaps in development mode
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ["react", "react-dom"],
-            ui: ["@radix-ui/react-*"],
+            vendor: ["react", "react-dom"], // Separate vendor libraries
+            ui: ["@radix-ui/react-*"], // Separate UI libraries
           },
         },
       },
     },
-    plugins: [react()],
+    plugins: [react()], // Add React plugin for Vite
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"), // Alias for the "src" directory
       },
     },
     define: {
-      __APP_ENV__: JSON.stringify(env.APP_ENV),
+      __APP_ENV__: JSON.stringify(env.APP_ENV), // Define environment-specific variables
     },
   };
 });
