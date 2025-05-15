@@ -1,4 +1,3 @@
-// vite.config.ts
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
@@ -9,12 +8,12 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      host: true,
+      host: true, // Expose the server to the local network
       port: parseInt(env.PORT || "5173"), // Use the port from .env.client or default to 5173
       strictPort: true, // Fail if the port is already in use
       proxy: {
         "/api": {
-          target: env.VITE_API_URL || "http://localhost:5000", // Proxy API requests to the backend
+          target: env.VITE_API_URL || "http://backend:5000", // Proxy API requests to the backend
           changeOrigin: true,
           secure: false,
           ws: true,
@@ -23,7 +22,7 @@ export default defineConfig(({ mode }) => {
               console.log("proxy error", err);
             });
             proxy.on("proxyReq", (proxyReq) => {
-              proxyReq.setHeader("Origin", env.VITE_FRONTEND_URL || "http://localhost:5173");
+              proxyReq.setHeader("Origin", env.VITE_FRONTEND_URL || "http://client:5173");
             });
           },
         },

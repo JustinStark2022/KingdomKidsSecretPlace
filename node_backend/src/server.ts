@@ -28,7 +28,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
-  FRONTEND_URL: z.string().default("http://localhost:5173"),
+  FRONTEND_URL: z.string().default("http://client:5173"),
 });
 
 try {
@@ -46,7 +46,9 @@ app.use(helmet());
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: process.env.NODE_ENV === "development"
+    ? process.env.FRONTEND_URL || "http://client:5173" // Allow localhost during development
+    : process.env.FRONTEND_URL, // Use the environment variable in production
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -72,10 +74,10 @@ app.use("/api/child-dashboard", childDashboardRoutes);
 app.use("/api/games", gamesRoutes);
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   logger.error(err.stack);
   res.status(500).json({
-    error: process.env.NODE_ENV === "production" ? "Internal server error" : err.message
+    error: process.env.NODE_ENV === "production" ? "Internal server error" : err.message,
   });
 });
 
