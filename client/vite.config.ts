@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       host: true, // Expose the server to the local network
-      port: parseInt(env.PORT || "5173"), // Use the port from .env or default to 5173
+      port: parseInt(env.PORT || "3000"), // Use the port from .env or default to 3000
       strictPort: true, // Fail if the port is already in use
       proxy: {
         "/api": {
@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
               console.log("proxy error", err);
             });
             proxy.on("proxyReq", (proxyReq) => {
-              proxyReq.setHeader("Origin", env.VITE_FRONTEND_URL || "http://client:5173");
+              proxyReq.setHeader("Origin", env.VITE_FRONTEND_URL || "http://client:3000");
             });
           },
         },
