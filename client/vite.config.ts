@@ -3,13 +3,13 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig(({ mode }) => {
-  // Explicitly load .env.client from the root directory
-  const env = loadEnv(mode, process.cwd(), ".env.client");
+  // Explicitly load .env from the root directory
+  const env = loadEnv(mode, process.cwd(), ".env");
 
   return {
     server: {
       host: true, // Expose the server to the local network
-      port: parseInt(env.PORT || "5173"), // Use the port from .env.client or default to 5173
+      port: parseInt(env.PORT || "5173"), // Use the port from .env or default to 5173
       strictPort: true, // Fail if the port is already in use
       proxy: {
         "/api": {

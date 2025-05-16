@@ -2,8 +2,8 @@
 import dotenv from "dotenv";
 import { z } from "zod";
 
-// Load environment variables from the renamed and relocated .env.node_backend file
-dotenv.config({ path: "../.env.node_backend" });
+// Load environment variables from the renamed and relocated .env file
+dotenv.config({ path: "../.env" });
 
 // Validate database configuration
 const dbConfigSchema = z.object({

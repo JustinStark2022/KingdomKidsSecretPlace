@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "../.env.node_backend" });
+dotenv.config({ path: "../.env" });
 
 import jwt from "jsonwebtoken";
 

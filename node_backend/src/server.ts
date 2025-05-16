@@ -20,7 +20,7 @@ import { logger } from "./utils/logger";
 import dotenv from "dotenv";
 
 // Load environment variables
-dotenv.config({ path: "../.env.node_backend" });
+dotenv.config({ path: "../.env" });
 
 // Environment variable validation
 const envSchema = z.object({
