@@ -1,5 +1,5 @@
 {
-  "name": "MyFaithFortress",
+  "name": "KINGDOMKIDSWORKSPACE",
   "dockerFile": "Dockerfile",
    "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
