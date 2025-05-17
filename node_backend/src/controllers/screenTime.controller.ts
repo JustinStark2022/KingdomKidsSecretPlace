@@ -47,12 +47,22 @@ export const getScreenTimeForUser = async (req: Request, res: Response) => {
 // New: update screen time limits for a user
 export const updateScreenTime = async (req: Request, res: Response) => {
   try {
-    const { userId, allowedTimeMinutes } = req.body as { userId: number; allowedTimeMinutes: number };
+    let { userId, allowedTimeMinutes } = req.body as { userId: number; allowedTimeMinutes: number | string };
+
+    // Convert to number and validate
+    userId = Number(userId);
+    allowedTimeMinutes = Number(allowedTimeMinutes);
+
+    if (isNaN(userId) || isNaN(allowedTimeMinutes)) {
+      return res.status(400).json({ message: "Invalid userId or allowedTimeMinutes" });
+    }
+
     const [updated] = await db
       .update(screenTimeTable)
       .set({ daily_limits_total: allowedTimeMinutes })
       .where(eq(screenTimeTable.user_id, userId))
       .returning();
+
     if (!updated) return res.status(404).json({ message: "Screen time record not found" });
     res.json(updated);
   } catch (err) {
