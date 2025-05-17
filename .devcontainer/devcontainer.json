@@ -1,6 +1,7 @@
 {
   "name": "KINGDOMKIDSWORKSPACE",
   "dockerFile": "Dockerfile",
+  "context": "..",
    "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
     "js/ts.implicitProjectConfig.module": "ES6",

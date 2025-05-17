@@ -2,7 +2,7 @@
 FROM node:18-slim
 
 WORKDIR /KingdomKidsWorkspace/node_backend
-COPY node_backend/package.json node_backend/package-lock.json* ./
+COPY node_backend/package.json ./
 RUN npm install
 
 WORKDIR /KingdomKidsWorkspace/client
