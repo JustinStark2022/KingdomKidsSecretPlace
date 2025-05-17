@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   backend:
     build:
@@ -33,6 +32,8 @@ services:
       - VITE_API_URL=http://backend:5000 
       - VITE_FRONTEND_URL=http://client:5173
       - PORT=5173
+      - JWT_SECRET=super_secret_kingdom_kids_key_123
+      - JWT_EXPIRATION=1h
     volumes:
       - ./client:/app
       - /app/node_modules
