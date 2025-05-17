@@ -1,3 +1,8 @@
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config({ path: "../.env.node_backend" });
+
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -17,10 +22,7 @@ import childDashboardRoutes from "@/routes/childDashboard.routes";
 import gamesRoutes from "./routes/games.routes";
 
 import { logger } from "./utils/logger";
-import dotenv from "dotenv";
 
-// Load environment variables
-dotenv.config({ path: "../.env.node_backend" });
 
 // Environment variable validation
 const envSchema = z.object({
