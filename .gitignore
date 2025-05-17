@@ -1,2 +1,3 @@
 .qodo
 node_backend/.env
+client/.env
