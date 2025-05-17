@@ -18,9 +18,9 @@
     "GitHub.vscode-pull-request-github"
   ],
   "postCreateCommand": "cd node_backend && npm install && cd ../client && npm install",
-  "forwardPorts": [3000, 5000],
+  "forwardPorts": [5173, 5000],
   "portsAttributes": {
-    "3000": {
+    "5173": {
       "label": "client"
     },
     "5000": {

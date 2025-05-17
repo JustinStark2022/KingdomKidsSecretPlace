@@ -52,7 +52,7 @@ export default function LocationTracking() {
       return res.json();
     },
     enabled: !!selectedChild,
-    refetchInterval: autoRefresh ? 30000 : false,
+    refetchInterval: autoRefresh ? 51730 : false,
   });
 
   useEffect(() => {
