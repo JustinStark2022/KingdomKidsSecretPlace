@@ -143,7 +143,7 @@ export default function ScreenTime() {
               <SelectTrigger id="child-selector" className="w-full">
                 <SelectValue placeholder="Select a child" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-gray-900 shadow-lg z-50">
                 {children.map((child) => (
                   <SelectItem key={child.id} value={child.id.toString()}>
                     {child.username}

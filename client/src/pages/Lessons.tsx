@@ -41,12 +41,13 @@ export default function Lessons() {
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
 
   const { data: lessonProgress = [], isLoading } = useQuery<LessonProgress[]>({
-    queryKey: ["/api/lessons/progress"],
-    queryFn: async () => {
-      const res = await apiRequest("GET", "/api/lessons/progress");
-      return res.json();
-    }
-  });
+  queryKey: ["/api/lessons"],
+  queryFn: async () => {
+    const res = await apiRequest("GET", "/api/lessons");
+    return res.json();
+  }
+});
+
 
   const completeLessonMutation = useMutation({
     mutationFn: async (lessonId: number) => {
