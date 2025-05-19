@@ -109,7 +109,6 @@ export default function ChildLayout({ children, title }: ChildLayoutProps) {
           <div className="px-4 mt-10">
             <Button
               className="w-full justify-center rounded-xl py-6 text-base"
-              variant="outline"
               onClick={handleLogout}
             >
               <LogOut className="mr-3 h-5 w-5" />

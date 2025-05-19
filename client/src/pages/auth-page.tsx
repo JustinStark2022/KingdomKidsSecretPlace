@@ -60,9 +60,9 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 font-poppins">
-      <Card className="w-full max-w-md shadow-xl rounded-2xl border-0">
+      <Card className="h-full shadow-xl rounded-2xl border-0">
         <CardContent className="p-8 space-y-6">
-          <div className="text-center">
+          <div className=" h-full text-center">
             <Logo />
           </div>
 
