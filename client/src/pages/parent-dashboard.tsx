@@ -19,6 +19,12 @@ import { fetchChildren} from "@/api/children";
 import { getFlaggedContent, FlaggedContent } from "@/api/monitoring";
 import CastleLogo from "@/components/ui/castle";
 
+const childImages = [
+  "public/images/profile-boy-1.png",
+  "public/images/profile-boy-2.png",
+  "public/images/profile-girl.png",
+];
+
 export default function ParentDashboard() {
   const { user } = useAuth();
 
@@ -82,12 +88,12 @@ const placeholderProfilePic =
                   </tr>
                 </thead>
                 <tbody>
-                  {children.map((child) => (
+                  {children.map((child, index) => (
                     <tr key={child.id} className="border-t">
                       <td className="py-3">
                         <div className="flex items-center">
                           <img
-                            src={placeholderProfilePic}
+                            src={childImages[index] || placeholderProfilePic}
                             alt={`${child.first_name} ${child.last_name} Profile`}
                             className="w-16 h-16 rounded-full border border-gray-300 object-cover"
                           />

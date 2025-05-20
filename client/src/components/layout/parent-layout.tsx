@@ -78,7 +78,7 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
             <div className="flex items-center space-x-3 mb-3">
               <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow">
                 <img 
-                  src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=64&h=64&q=80" 
+                  src="/images/justin-faithfortress.png" 
                   alt="Profile" 
                   className="w-full h-full object-cover"
                 />
@@ -166,5 +166,3 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
     </div>
   );
 }
-
-// Removed duplicate export default Logo;
