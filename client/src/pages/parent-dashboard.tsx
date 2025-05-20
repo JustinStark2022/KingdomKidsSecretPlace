@@ -19,9 +19,9 @@ import { fetchChildren} from "@/api/children";
 import { getFlaggedContent, FlaggedContent } from "@/api/monitoring";
 
 const childImages = [
-  "public/images/profile-boy-1.png",
-  "public/images/profile-boy-2.png",
-  "public/images/profile-girl.png",
+  "/images/profile-boy-1.png",
+  "/images/profile-boy-2.png",
+  "/images/profile-girl.png"
 ];
 
 export default function ParentDashboard() {
