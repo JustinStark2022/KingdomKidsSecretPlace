@@ -34,9 +34,6 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-const parentImage = [
-  "public/images/justin-faithfortress.png"
-];
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
@@ -80,15 +77,17 @@ const parentImage = [
         <div className="overflow-y-auto h-full scrollbar-hide py-4">
           <div className="px-4 mb-4">
             <div className="flex items-center space-x-3 mb-3">
-              <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-200 border-2 border-white shadow mb-2">
-                <img
-                  src="/images/justin-faithfortress.png"
-                  alt={`${user?.first_name} ${user?.last_name} Profile`}
-                  className="w-full h-full object-cover"
-                />
+              <div className="flex items-center">
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 border-2 border-white shadow flex items-center justify-center">
+                  <img
+                    src="/images/justin-faithfortress.png"
+                    alt={`${user?.first_name} ${user?.last_name} Profile`}
+                    className="w-20 h-20 "
+                  />
+                </div>
               </div>
               <div>
-                <div className="font-medium text-base">{user?.first_name} {user?.last_name}</div>
+                <div className="font-small text-base">{user?.first_name} {user?.last_name}</div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">Parent Account</div>
               </div>
             </div>
