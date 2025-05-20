@@ -17,7 +17,6 @@ import { Link } from "wouter";
 import { Child } from "@/types/user";
 import { fetchChildren} from "@/api/children";
 import { getFlaggedContent, FlaggedContent } from "@/api/monitoring";
-import CastleLogo from "@/components/ui/castle";
 
 const childImages = [
   "public/images/profile-boy-1.png",
@@ -28,8 +27,6 @@ const childImages = [
 export default function ParentDashboard() {
   const { user } = useAuth();
 
-const placeholderProfilePic =
-  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iNjQiIGZpbGw9IiNFRURFREUiLz48Y2lyY2xlIGN4PSI2NCIgY3k9IjQ4IiByPSIyMCIgZmlsbD0iI0ZGMDAwMCIvPjxwYXRoIGQ9Ik0zMCA4MGMwLTExLjA0IDguOTYtMjAgMjAtMjBoMjhjMTEuMDQgMCAyMCA4Ljk2IDIwIDIwdjE2SDMwdjE2YzAtMTEuMDQgOC45Ni0yMCAyMC0yMHYtMTYiIGZpbGw9IiMwMEE5RkYiLz48L3N2Zz4=";
 
   const {
     data: children = [],
@@ -51,11 +48,6 @@ const placeholderProfilePic =
 
   return (
     <ParentLayout title="Dashboard">
-      <div className="flex items-center">
-        <div className="w-12 h-12">
-          <CastleLogo />
-        </div>
-      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Child Overview */}
         <Card className="lg:col-span-2">
@@ -93,9 +85,9 @@ const placeholderProfilePic =
                       <td className="py-3">
                         <div className="flex items-center">
                           <img
-                            src={childImages[index] || placeholderProfilePic}
+                            src={childImages[index] }
                             alt={`${child.first_name} ${child.last_name} Profile`}
-                            className="w-16 h-16 rounded-full border border-gray-300 object-cover"
+                            className="w-12 h-12 rounded-full border border-gray-300 object-cover mr-4"
                           />
                           <span className="font-semibold mr-1">{child.username}</span>
                           <span className="text-gray-500">({child.first_name} {child.last_name})</span>
@@ -164,8 +156,7 @@ const placeholderProfilePic =
             )}
           </CardContent>
         </Card>
-      </div>
-
+</div>
       {/* Quick Actions */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>

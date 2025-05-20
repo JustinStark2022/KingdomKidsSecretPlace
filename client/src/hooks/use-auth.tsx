@@ -50,6 +50,7 @@ export function useAuth() {
       method: "POST",
       credentials: "include",
     }).finally(() => {
+      localStorage.removeItem("token");
       setUser(null);
       navigate("/auth");
     });

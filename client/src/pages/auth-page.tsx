@@ -34,6 +34,9 @@ export default function AuthPage() {
     if (mode === "login") {
       try {
         const user = await login(form.username, form.password);
+        if (user.token) {
+          localStorage.setItem("token", user.token);
+        }
         setUser(user);
         navigate(user.role === "parent" ? "/dashboard" : "/child-dashboard");
       } catch (err: any) {
@@ -50,6 +53,9 @@ export default function AuthPage() {
 
         if (!response.ok) throw new Error("Registration failed");
         const user = await response.json();
+        if (user.token) {
+          localStorage.setItem("token", user.token);
+        }
         setUser(user);
         navigate("/dashboard");
       } catch (err: any) {
