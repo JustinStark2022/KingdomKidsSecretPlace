@@ -17,6 +17,7 @@ import { Link } from "wouter";
 import { Child } from "@/types/user";
 import { fetchChildren} from "@/api/children";
 import { getFlaggedContent, FlaggedContent } from "@/api/monitoring";
+import CastleLogo from "@/components/ui/castle-logo";
 
 export default function ParentDashboard() {
   const { user } = useAuth();
@@ -41,6 +42,11 @@ export default function ParentDashboard() {
 
   return (
     <ParentLayout title="Dashboard">
+      <div className="flex items-center">
+        <div className="w-12 h-12">
+          <CastleLogo />
+        </div>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Child Overview */}
         <Card className="lg:col-span-2">

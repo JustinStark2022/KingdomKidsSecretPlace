@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "wouter";
 import { BookOpen, BookText, Bookmark, Clock, Check, Lock } from "lucide-react";
+import CastleLogo from "@/components/ui/castle-logo";
 
 export default function ChildDashboard() {
   const { user } = useAuth();
@@ -31,6 +32,11 @@ export default function ChildDashboard() {
   return (
     <ChildLayout title="My Home">
       <div className="bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-primary-900/20 dark:to-secondary-900/20 rounded-2xl shadow-lg p-6 mb-6">
+        <div className="flex items-center">
+          <div className="w-12 h-12">
+            <CastleLogo />
+          </div>
+        </div>
         <h1 className="text-2xl font-bold mb-2 text-primary-700 dark:text-primary-300">
           Welcome back, {user?.display_name}!
         </h1>
