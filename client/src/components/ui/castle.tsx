@@ -1,6 +1,6 @@
 import React from "react";
 
-const CastleLogo: React.FC = () => (
+const Castle: React.FC = () => (
   <img
     src="/images/faithfortresscastlelogo.png"
     alt="My Faith Fortress Logo"
@@ -9,4 +9,4 @@ const CastleLogo: React.FC = () => (
   />
 );
 
-export default CastleLogo;
+export default Castle;

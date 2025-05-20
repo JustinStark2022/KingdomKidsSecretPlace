@@ -3,7 +3,7 @@ import { useLocation, Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ui/theme-provider";
-import Logo from "@/components/ui/logo";
+import Castle from "@/components/ui/castle";
 
 import { 
   LayoutDashboard, 
@@ -67,7 +67,7 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
         } lg:translate-x-0 lg:static lg:inset-0`}
       >
         <div className="w-full h-40 relative border-b dark:border-gray-700 bg-white dark:bg-gray-800 p-0 m-0 overflow-hidden">
-          <Logo />
+          <Castle />
           <button onClick={closeSidebar} className="absolute top-4 right-4 text-gray-500 lg:hidden">
             <X className="h-6 w-6" />
           </button>

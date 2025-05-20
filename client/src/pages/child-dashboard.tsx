@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "wouter";
 import { BookOpen, BookText, Bookmark, Clock, Check, Lock } from "lucide-react";
-import CastleLogo from "@/components/ui/castle-logo";
+import CastleLogo from "@/components/ui/castle";
 
 export default function ChildDashboard() {
   const { user } = useAuth();
