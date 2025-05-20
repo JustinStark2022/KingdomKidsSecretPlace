@@ -60,10 +60,12 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 font-poppins">
-      <Card className="h-full shadow-xl rounded-2xl border-0">
-        <CardContent className="p-8 space-y-6">
-          <div className=" h-full text-center">
-            <Logo />
+      <Card className=" shadow-xl rounded-2xl border-0">
+        <CardContent className="py-12 px-6 sm:px-12 space-y-6">
+          <div className="w-full flex justify-center items-center">
+            <div className="w-45 h-60 flex items-center justify-center">
+              <Logo />
+            </div>
           </div>
 
           {/* Tabs */}
