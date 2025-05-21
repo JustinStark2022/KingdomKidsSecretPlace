@@ -66,14 +66,13 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 font-poppins">
-      <Card className=" shadow-xl rounded-2xl border-0">
-        <CardContent className="py-12 space-y-6">
+      <Card className="w-full max-w-md shadow-xl rounded-2xl border-0">
+        <CardContent className="py-10 px-6 space-y-6">
           <div className="w-full flex justify-center items-center">
-            <div className="w-44 h-60 flex items-center justify-center">
+            <div className="w-32 h-32 flex items-center justify-center">
               <Logo />
             </div>
           </div>
-
           {/* Tabs */}
           <div className="flex items-center justify-center bg-muted rounded-lg p-1">
             <button
@@ -99,7 +98,6 @@ export default function AuthPage() {
               Register
             </button>
           </div>
-
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (

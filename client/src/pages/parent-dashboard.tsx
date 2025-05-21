@@ -178,7 +178,7 @@ export default function ParentDashboard() {
             <p className="text-sm mb-4 text-gray-600 dark:text-gray-400">
               Adjust filters to block harmful content for all children.
             </p>
-            <Button asChild variant="secondary" className="w-full">
+            <Button asChild className="w-full">
               <Link href="/monitoring">Adjust Filters</Link>
             </Button>
           </CardContent>
@@ -190,7 +190,7 @@ export default function ParentDashboard() {
             <p className="text-sm mb-4 text-gray-600 dark:text-gray-400">
               Assign devotionals and Bible verses for growth.
             </p>
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild className="w-full">
               <Link href="/lessons">Assign Lessons</Link>
             </Button>
           </CardContent>

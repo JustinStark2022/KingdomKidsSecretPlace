@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import ParentLayout from "@/components/layout/parent-layout";
@@ -33,19 +33,31 @@ interface LessonProgress {
   completed: boolean;
 }
 
+interface Child {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+
 export default function Lessons() {
   const { user } = useAuth();
   const isChild = user?.role === "child";
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("available");
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
+  const [assigningLessonId, setAssigningLessonId] = useState<number | null>(null);
+  const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
 
   const { data: lessonProgress = [], isLoading } = useQuery<LessonProgress[]>({
-  queryKey: ["/api/lessons"],
+  queryKey: ["/api/lessons", selectedChildId],
   queryFn: async () => {
-    const res = await apiRequest("GET", "/api/lessons");
+    const url = isChild
+      ? "/api/lessons"
+      : `/api/lessons?childId=${selectedChildId}`;
+    const res = await apiRequest("GET", url);
     return res.json();
-  }
+  },
+  enabled: isChild || (!!selectedChildId && !isChild),
 });
 
 
@@ -72,6 +84,30 @@ export default function Lessons() {
     },
   });
 
+  const assignLessonMutation = useMutation({
+    mutationFn: async ({ lessonId, childId }: { lessonId: number; childId: number }) => {
+      const res = await apiRequest("POST", `/api/lessons/${lessonId}/assign`, { childId });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Lesson assigned!", description: "The lesson was assigned to the child." });
+      setAssigningLessonId(null);
+      setSelectedChildId(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error assigning lesson", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const { data: children = [], isLoading: isChildrenLoading } = useQuery<Child[]>({
+    queryKey: ["/api/children"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/children");
+      return res.json();
+    },
+    enabled: !isChild,
+  });
+
   const completedLessons = lessonProgress.filter(item => item.completed).length;
   const totalLessons = lessonProgress.length;
   const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
@@ -88,9 +124,35 @@ export default function Lessons() {
 
   const Layout = isChild ? ChildLayout : ParentLayout;
 
+  useEffect(() => {
+    if (!isChild && children.length > 0 && !selectedChildId) {
+      setSelectedChildId(children[0].id);
+    }
+  }, [children, isChild, selectedChildId]);
+
   return (
     <Layout title="Bible Lessons">
       <div className="max-w-5xl mx-auto">
+
+        {/* Move the child selection dropdown here, above the lessons grid */}
+        {!isChild && (
+          <div className="mb-6 flex items-center gap-2">
+            <label className="font-medium">Viewing:</label>
+            <select
+              className="border rounded px-2 py-1"
+              value={selectedChildId ?? ""}
+              onChange={e => setSelectedChildId(Number(e.target.value))}
+              disabled={isChildrenLoading}
+            >
+              {children.map(child => (
+                <option key={child.id} value={child.id}>
+                  {child.first_name} {child.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <Card className="mb-6 border-0 shadow-md">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
@@ -245,6 +307,19 @@ export default function Lessons() {
                                   )}
                                 </Button>
                               )}
+                              {!isChild && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="ml-2"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAssigningLessonId(item.lesson.id);
+                                  }}
+                                >
+                                  Assign
+                                </Button>
+                              )}
                             </div>
                           </div>
                         )}
@@ -291,6 +366,43 @@ export default function Lessons() {
             </Card>
           </div>
         </div>
+
+        {assigningLessonId && (
+          <div className="mt-4 p-4 bg-gray-50 rounded shadow">
+            <label className="block mb-2 font-medium">Assign to Child:</label>
+            {isChildrenLoading ? (
+              <div className="text-sm text-gray-500">Loading children...</div>
+            ) : (
+              <select
+                className="border rounded px-2 py-1"
+                value={selectedChildId ?? ""}
+                onChange={e => setSelectedChildId(Number(e.target.value))}
+              >
+                <option value="">Select a child</option>
+                {children.map(child => (
+                  <option key={child.id} value={child.id}>
+                    {child.first_name} {child.last_name}
+                  </option>
+                ))}
+              </select>
+            )}
+            <Button
+              className="ml-2"
+              disabled={!selectedChildId || assignLessonMutation.isPending}
+              onClick={() =>
+                assignLessonMutation.mutate({
+                  lessonId: assigningLessonId,
+                  childId: selectedChildId!,
+                })
+              }
+            >
+              Assign
+            </Button>
+            <Button variant="ghost" className="ml-2" onClick={() => setAssigningLessonId(null)}>
+              Cancel
+            </Button>
+          </div>
+        )}
       </div>
     </Layout>
   );
