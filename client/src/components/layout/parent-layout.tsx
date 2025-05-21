@@ -59,14 +59,15 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
     { path: "/support", label: "Support", icon: <HelpCircle className="mr-3 h-5 w-5" /> },
   ];
 
+  // Define the profile image variable
+  const parentProfileImage = "/images/Justin-faithfortress.png";
+
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar for larger screens and mobile when toggled */}
-      <div 
-        className={`fixed inset-y-0 left-0 z-30 w-48 bg-white dark:bg-gray-800 shadow-lg transform transition-all duration-300 ease-in-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 lg:static lg:inset-0`}
-      >
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-30 w-48 bg-white dark:bg-gray-800 shadow-lg transform transition-all duration-300 ease-in-out ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0 lg:static lg:inset-0`}>
         <div className="w-36 h-36 relative border-b dark:border-gray-700 bg-white dark:bg-gray-800 p-0 m-0 overflow-hidden">
           <Castle />
           <button onClick={closeSidebar} className="absolute top-4 right-4 text-gray-500 lg:hidden">
@@ -77,12 +78,13 @@ export default function ParentLayout({ children, title }: ParentLayoutProps) {
         <div className="overflow-y-auto h-full scrollbar-hide py-4">
           <div className="px-4 mb-4">
             <div className="flex items-center space-x-3 mb-3">
-              <div className="flex items-center">
+              <div className="relative">
+                {/* Profile Picture */}
                 <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 border-2 border-white shadow flex items-center justify-center">
                   <img
-                    src="/images/justin-faithfortress.png"
+                    src={parentProfileImage}
                     alt={`${user?.first_name} ${user?.last_name} Profile`}
-                    className="w-20 h-20 "
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
