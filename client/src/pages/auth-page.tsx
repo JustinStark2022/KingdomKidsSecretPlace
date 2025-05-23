@@ -66,10 +66,10 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 font-poppins">
-      <Card className="w-full max-w-md shadow-xl rounded-2xl border-0">
-        <CardContent className="py-10 px-6 space-y-6">
+      <Card className="w-full max-w-xl shadow-xl rounded-2xl border-0"> {/* Increased max-w-xl */}
+        <CardContent className="py-14 px-10 space-y-8"> {/* More padding */}
           <div className="w-full flex justify-center items-center">
-            <div className="w-32 h-32 flex items-center justify-center">
+            <div className="w-48 h-48 flex items-center justify-center"> {/* Larger container */}
               <Logo />
             </div>
           </div>
