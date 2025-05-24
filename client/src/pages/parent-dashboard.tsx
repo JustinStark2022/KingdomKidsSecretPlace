@@ -12,13 +12,14 @@ import {
   PlusCircle,
   MessageCircle,
   Sparkles,
+  Send,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { Child } from "@/types/user";
 import { fetchChildren } from "@/api/children";
 import { getFlaggedContent, FlaggedContent } from "@/api/monitoring";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const childImages = [
   "/images/profile-girl.png",
@@ -66,9 +67,24 @@ function VerseOfTheDay({ mode }: { mode: "auto" | "manual" }) {
   );
 }
 
+interface ChatMessage {
+  sender: "bot" | "user";
+  text: string;
+}
+
+const initialMessages: ChatMessage[] = [
+  {
+    sender: "bot",
+    text: "👋 Hi! I'm your Faith Fortress AI Chatbot. How can I help you today?",
+  },
+];
+
 export default function ParentDashboard() {
   const { user } = useAuth();
   const [verseMode, setVerseMode] = useState<"auto" | "manual">("auto");
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [input, setInput] = useState("");
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const {
     data: children = [],
@@ -88,12 +104,26 @@ export default function ParentDashboard() {
     queryFn: getFlaggedContent,
   });
 
+  // Dummy send handler
+  const handleSend = () => {
+    if (!input.trim()) return;
+    setMessages((msgs) => [
+      ...msgs,
+      { sender: "user", text: input },
+      {
+        sender: "bot",
+        text: "Thank you for your message! (AI response coming soon.)",
+      },
+    ]);
+    setInput("");
+    setTimeout(() => {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
   return (
-    <ParentLayout title="Dashboard">
+    <ParentLayout title="My Faith Fortress Parent Dashboard">
       {/* Header */}
-      <div className="flex items-center px-2 py-2 border-b bg-white mb-2">
-        <h1 className="text-3xl font-bold font-serif">My Faith Fortress Parent Dashboard</h1>
-      </div>
       {/* Main Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-8 gap-4">
         {/* Children Overview & Actions */}
@@ -211,54 +241,102 @@ export default function ParentDashboard() {
               </CardContent>
             </Card>
           </div>
-          {/* Action Cards */}
-          <div className="flex flex-col sm:flex-row gap-2 mt-2">
-            <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
-              <CardContent className="py-1 flex flex-col items-center justify-center">
-                <span className="font-semibold text-xs mb-1 text-base text-center">Create New Child Account</span>
-                <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
-                  <Link href="/children">Create Account</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
-              <CardContent className="py-1 flex flex-col items-center justify-center">
-                <span className="font-semibold mb-1 text-xs text-base text-center">Bible Education Control Center</span>
-                <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
-                  <Link href="/monitoring">Adjust Filters</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
-              <CardContent className="py-1 flex flex-col items-center justify-center">
-                <span className="font-semibold mb-1 text-xs text-base text-center">Parental Controls Center</span>
-                <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
-                  <Link href="/lessons">Open Controls</Link>
-                </Button>
+          <div className="xl:col-span-10 flex flex-row gap-2">
+          {/* Action Cards, Verse of the Day, and Chat Side-by-Side */}
+          <div className="flex flex-row gap-8 mt-2">
+            {/* Left: Action Cards + Verse of the Day */}
+            <div className="flex-1 flex flex-col gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
+                  <CardContent className="py-1 flex flex-col items-center justify-center">
+                    <span className="font-semibold text-xs mb-1 text-base text-center">Create New Child Account</span>
+                    <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
+                      <Link href="/children">Create Account</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+                <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
+                  <CardContent className="py-1 flex flex-col items-center justify-center">
+                    <span className="font-semibold mb-1 text-xs text-base text-center">Bible Education Control Center</span>
+                    <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
+                      <Link href="/monitoring">Adjust Filters</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+                <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
+                  <CardContent className="py-1 flex flex-col items-center justify-center">
+                    <span className="font-semibold mb-1 text-xs text-base text-center">Parental Controls Center</span>
+                    <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
+                      <Link href="/lessons">Open Controls</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+              {/* Verse of the Day */}
+              <Card className="h-[100px] max-w-[585px]">
+                <CardContent className="pt-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-md font-bold">Verse of the Day</h2>
+                    <select
+                      className="border rounded px-2 py-1 text-sm"
+                      value={verseMode}
+                      onChange={e => setVerseMode(e.target.value as "auto" | "manual")}
+                    >
+                      <option value="auto">Auto</option>
+                      <option value="manual">Manual</option>
+                    </select>
+                  </div>
+                  <VerseOfTheDay mode={verseMode} />
+                </CardContent>
+              </Card>
+            </div>
+            {/* Right: Chatbot */}
+            <Card className="min-w-[630] h-[180px] flex flex-col">
+              <CardContent className="p-0 flex-1 flex flex-col">
+                <div className="flex items-center gap-2 px-4 py-3 border-b bg-blue-50 rounded-t-2xl">
+                  <MessageCircle className="text-blue-500" />
+                  <span className="font-semibold text-blue-900 text-lg">Faith Fortress Chat</span>
+                </div>
+                <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-blue-50">
+                  {messages.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`px-3 py-2 rounded-lg text-sm max-w-[80%] ${
+                          msg.sender === "user"
+                            ? "bg-blue-500 text-white"
+                            : "bg-white border text-gray-800"
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+                <div className="flex items-center gap-2 px-3 py-2 border-t bg-white rounded-b-2xl">
+                  <input
+                    className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    placeholder="Type your message..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleSend()}
+                  />
+                  <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2 transition"
+                    onClick={handleSend}
+                    aria-label="Send"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
               </CardContent>
             </Card>
           </div>
         </div>
-        {/* Right Column */}
-        <div>
-          {/* Verse of the Day */}
-          <Card className="h-[100px] min-w-[585px]">
-            <CardContent className="pt-2">
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="text-md font-bold">Verse of the Day</h2>
-                <select
-                  className="border rounded px-2 py-1 text-sm"
-                  value={verseMode}
-                  onChange={e => setVerseMode(e.target.value as "auto" | "manual")}
-                >
-                  <option value="auto">Auto</option>
-                  <option value="manual">Manual</option>
-                </select>
-              </div>
-              <VerseOfTheDay mode={verseMode} />
-            </CardContent>
-          </Card>
-        </div>
+        </div>        
       </div>
     </ParentLayout>
   );
