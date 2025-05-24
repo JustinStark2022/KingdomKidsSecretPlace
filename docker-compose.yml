@@ -4,7 +4,7 @@ services:
       context: ./node_backend
       dockerfile: Dockerfile
     ports:
-      - "5000:5000" 
+      - "5000:5000"
     environment:
       - NODE_ENV=development
       - PORT=5000
@@ -21,15 +21,22 @@ services:
       - ./node_backend:/app
       - /app/node_modules
     command: npm run dev
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./node_backend
+          target: /app
+          ignore:
+            - node_modules/
 
   client:
     build:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "5173:5173" 
+      - "5173:5173"
     environment:
-      - VITE_API_URL=http://backend:5000 
+      - VITE_API_URL=http://backend:5000
       - VITE_FRONTEND_URL=http://client:5173
       - PORT=5173
       - JWT_SECRET=super_secret_kingdom_kids_key_123
@@ -38,3 +45,10 @@ services:
       - ./client:/app
       - /app/node_modules
     command: npm run dev
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./client
+          target: /app
+          ignore:
+            - node_modules/
