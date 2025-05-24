@@ -8,6 +8,7 @@ import {
   getVerse,
   getVerses,
   getBiblePassage,
+  getVerseCountForChapter, // Added import
 } from "@/controllers/bible.controller";
 
 const router = Router();
@@ -32,5 +33,8 @@ router.get("/bibles/:bibleId/verses/:verseId", getVerse);
 
 // GET /api/bible/bibles/:bibleId/passages/:passageId
 router.get("/bibles/:bibleId/passages/:passageId", getBiblePassage);
+
+// GET /api/bible/bibles/:bibleId/books/:bookId/chapters/:chapterNumber/versecount
+router.get("/bibles/:bibleId/books/:bookId/chapters/:chapterNumber/versecount", getVerseCountForChapter); // Added route
 
 export default router;
