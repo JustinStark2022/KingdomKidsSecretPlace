@@ -66,24 +66,6 @@ function VerseOfTheDay({ mode }: { mode: "auto" | "manual" }) {
   );
 }
 
-// Mock Faith Fortress Chatbot
-function FaithFortressChat() {
-  return (
-    <div className="absolute bg-white border rounded-xl shadow-lg p-4 h-[400px] w-full flex flex-col">
-      <div className="flex items-center mb-2">
-        <Sparkles className="text-blue-500 mr-2" />
-        <h3 className="font-bold text-lg text-blue-700">Faith Fortress AI Chat</h3>
-      </div>
-      <div className="flex-1 text-gray-600 text-sm">
-        <p>
-          Welcome! I am your Faith Fortress AI, here to help guide your family closer to Jesus. Ask me anything about faith, parenting, or daily encouragement.
-        </p>
-        <div className="mt-4 italic text-gray-400">[Chat interface coming soon]</div>
-      </div>
-    </div>
-  );
-}
-
 export default function ParentDashboard() {
   const { user } = useAuth();
   const [verseMode, setVerseMode] = useState<"auto" | "manual">("auto");
@@ -230,30 +212,27 @@ export default function ParentDashboard() {
             </Card>
           </div>
           {/* Action Cards */}
-          <div className="flex flex-col  sm:flex-row gap-2 mt-2">
-            <Card className="flex-1">
-              <CardContent className="pt-3 flex flex-col items-center">
-                <UserPlus className="text-primary-500 mb-2 h-3 w-3" />
-                <span className="font-semibold mb-2">Create New Child Account</span>
-                <Button asChild className=" w-50% mt-2">
+          <div className="flex flex-col sm:flex-row gap-2 mt-2">
+            <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
+              <CardContent className="py-1 flex flex-col items-center justify-center">
+                <span className="font-semibold text-xs mb-1 text-base text-center">Create New Child Account</span>
+                <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
                   <Link href="/children">Create Account</Link>
                 </Button>
               </CardContent>
             </Card>
-            <Card className="flex-1">
-              <CardContent className="pt-3 flex flex-col items-center">
-                <ShieldCheck className="text-secondary-500 mb-2 h-3 w-3" />
-                <span className="font-semibold mb-2">Bible Education Control Center</span>
-                <Button asChild className="w-full mt-4">
+            <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
+              <CardContent className="py-1 flex flex-col items-center justify-center">
+                <span className="font-semibold mb-1 text-xs text-base text-center">Bible Education Control Center</span>
+                <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
                   <Link href="/monitoring">Adjust Filters</Link>
                 </Button>
               </CardContent>
             </Card>
-            <Card className="flex-1">
-              <CardContent className="pt-3 flex flex-col items-center">
-                <BookOpen className="text-accent-500 mb-2 h-3 w-3" />
-                <span className="font-semibold mb-2">Parental Controls Center</span>
-                <Button asChild className="w-full mt-2">
+            <Card className="flex-1 h-20 min-h-0 max-w-[190px]">
+              <CardContent className="py-1 flex flex-col items-center justify-center">
+                <span className="font-semibold mb-1 text-xs text-base text-center">Parental Controls Center</span>
+                <Button asChild className="w-full max-w-[120px] h-5 mt-1 text-xs">
                   <Link href="/lessons">Open Controls</Link>
                 </Button>
               </CardContent>
@@ -261,12 +240,12 @@ export default function ParentDashboard() {
           </div>
         </div>
         {/* Right Column */}
-        <div className="xl:col-span-3 flex flex-col gap-4">
+        <div>
           {/* Verse of the Day */}
-          <Card>
-            <CardContent className="pt-6">
+          <Card className="h-[100px] min-w-[585px]">
+            <CardContent className="pt-2">
               <div className="flex justify-between items-center mb-2">
-                <h2 className="text-lg font-bold">Verse of the Day</h2>
+                <h2 className="text-md font-bold">Verse of the Day</h2>
                 <select
                   className="border rounded px-2 py-1 text-sm"
                   value={verseMode}
@@ -279,10 +258,6 @@ export default function ParentDashboard() {
               <VerseOfTheDay mode={verseMode} />
             </CardContent>
           </Card>
-          {/* Faith Fortress AI Chatbot */}
-          <div className="fixed bottom-6 right-6 w-[400px] max-w-full z-50">
-            <FaithFortressChat />
-          </div>
         </div>
       </div>
     </ParentLayout>
